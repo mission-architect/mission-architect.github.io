@@ -131,6 +131,9 @@
     // uzay aracı: atölyedeki 3B model, görünür olsun diye büyütülmüş
     S.craft = new THREE.Group();
     const model = Craft3D.build(R);
+    // bu tuvalin yansıma haritasıyla malzemeleri kopyala (yansıma dokusu her WebGL bağlamına özel)
+    const envT = Craft3D.envFor(V.renderer);
+    model.traverse((o) => { if (o.isMesh && o.material) o.material = (Array.isArray(o.material) ? o.material.map((mt) => { const c = mt.clone(); c.envMap = envT; return c; }) : (() => { const c = o.material.clone(); c.envMap = envT; return c; })()); });
     const sph = new THREE.Box3().setFromObject(model).getBoundingSphere(new THREE.Sphere());
     const size = Math.max(0.26, S.extent * 0.1), ks = size / sph.radius;
     model.scale.setScalar(ks);
