@@ -636,10 +636,58 @@
   function clearCraft() {
     while (V.craft.children.length) { const o = V.craft.children[0]; V.craft.remove(o); disposeObj(o); }
   }
-  function disposeObj(o) { o.traverse((c) => { if (c.geometry) c.geometry.dispose(); }); }
+  function disposeObj(o) { o.traverse((c) => { if (c.geometry && !c.userData.shared) c.geometry.dispose(); }); }
+
+  /* ---------- gerçek NASA uzay aracı modelleri (2026-11-15 kullanıcı: "gövde kalas gibi, hazır NASA aracı varsa onu kullan") ----------
+     Her görev için o işi gerçekten yapmış bir NASA aracı: Dünya → Landsat 8, Ay → Clementine (Ay kutuplarında buz izine ilk rastlayan),
+     Mars → Mars Global Surveyor, Europa → Galileo (Europa okyanusunun ilk kanıtı). Model gelene kadar / gelmezse kodla çizilen araç. */
+  const CRAFT_GLB = { earth: 'landsat8.glb', moon: 'clementine.glb', mars: 'mgs.glb', europa: 'galileo.glb' };
+  const CRAFT_TPL = {};
+  // modeli ortala ve en büyük yarıçapı ~1,3 olacak şekilde ölçekle; geometri kopyalarla ortak → silinmesin
+  function normalizeCraft(m) {
+    const g = new THREE.Group(); g.add(m);
+    m.updateMatrixWorld(true);
+    const sph = new THREE.Box3().setFromObject(m).getBoundingSphere(new THREE.Sphere());
+    const k = 1.3 / (sph.radius || 1);
+    m.scale.multiplyScalar(k); m.updateMatrixWorld(true);
+    // ölçekten sonra merkezi yeniden ölç ve tam ortaya al
+    const c2 = new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3());
+    m.position.sub(c2);
+    // dokusuz modellerde malzeme adına göre gerçekçi renk (Galileo'da "black" adlı gövde yanlışlıkla maviydi)
+    const FIX = [[/black/i, 0x1d1f24, 0.3, 0.6], [/gold/i, 0xc8952e, 0.65, 0.35], [/silver|nozzle/i, 0xc9ced6, 0.8, 0.3], [/white/i, 0xeceef1, 0.1, 0.6]];
+    g.traverse((o) => {
+      if (!o.isMesh) return;
+      o.userData.shared = true;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      for (const mt of mats) {
+        if (!mt) continue;
+        mt.side = THREE.DoubleSide;
+        if (!mt.map) { const f = FIX.find(([re]) => re.test(mt.name || '')); if (f) { mt.color.setHex(f[1]); mt.metalness = f[2]; mt.roughness = f[3]; } }
+      }
+    });
+    return g;
+  }
+  // hazırsa NASA aracının bir kopyasını verir; değilse yüklemeyi başlatır (onReady) ve null döner
+  function nasaCraft(scId, onReady) {
+    const f = CRAFT_GLB[scId]; if (!f) return null;
+    if (CRAFT_TPL[scId]) return CRAFT_TPL[scId].clone(true);
+    if (CRAFT_TPL[scId] === false) return null;
+    if (!CRAFT_TPL['_l_' + scId]) {
+      CRAFT_TPL['_l_' + scId] = true;
+      loadModel(f, (m) => { CRAFT_TPL[scId] = normalizeCraft(m); if (onReady) onReady(); }, () => { CRAFT_TPL[scId] = false; });
+    }
+    return null;
+  }
 
   function setParts(R) {
-    const list = buildParts(R);
+    V.lastR = R;
+    const nasa = nasaCraft(R.sc.id, () => { if (V && V.lastR && V.host && V.host.isConnected) { setParts(V.lastR); kick(); } });
+    const list = nasa ? [{ key: 'nasa-' + R.sc.id, obj: nasa }] : buildParts(R);
+    V.nasaFit = !!nasa;
+    // NASA aracında parçalar değişmez; tasarım değişince araç kısa bir "nabız" atar (geri bildirim)
+    const sig = JSON.stringify(R.d);
+    if (nasa && V.lastSig && V.lastSig !== sig && V.parts.has('nasa-' + R.sc.id)) V.pulseAt = performance.now();
+    V.lastSig = sig;
     const prev = V.parts;
     clearCraft();
     V.parts = new Map();
@@ -659,7 +707,7 @@
     V.center = sph.center.clone();
     const fov = (V.camera.fov * Math.PI) / 180, aspect = V.camera.aspect || 1.6;
     const fitV = sph.radius / Math.sin(fov / 2), fitH = sph.radius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect));
-    V.distT = Math.max(fitV, fitH) * 0.78;
+    V.distT = Math.max(fitV, fitH) * (V.nasaFit ? 0.95 : 0.78); // NASA araçlarının uzun kolları kesilmesin
     V.radius = sph.radius;
 
     if (!V.dist) V.dist = V.distT;
@@ -670,7 +718,7 @@
     if (!w || !h) return false;
     if (V.w !== w || V.h !== h) {
       V.w = w; V.h = h; V.renderer.setSize(w, h, false); V.camera.aspect = w / h; V.camera.updateProjectionMatrix();
-      if (V.radius) { const fov = (V.camera.fov * Math.PI) / 180; V.distT = Math.max(V.radius / Math.sin(fov / 2), V.radius / Math.sin(Math.atan(Math.tan(fov / 2) * V.camera.aspect))) * 0.78; }
+      if (V.radius) { const fov = (V.camera.fov * Math.PI) / 180; V.distT = Math.max(V.radius / Math.sin(fov / 2), V.radius / Math.sin(Math.atan(Math.tan(fov / 2) * V.camera.aspect))) * (V.nasaFit ? 0.95 : 0.78); }
     }
     return true;
   }
@@ -695,6 +743,10 @@
     const c = V.center || new THREE.Vector3();
     if (placeCamera(V.camera, c, V.nav, V.dist)) busy = true;
     V.craft.position.y = REDUCED_MOTION ? 0 : Math.sin(now / 900) * 0.04;
+    // tasarım değişince kısa nabız
+    const pk = V.pulseAt ? (now - V.pulseAt) / 420 : 1;
+    V.craft.scale.setScalar(pk < 1 && !REDUCED_MOTION ? 1 + 0.07 * Math.sin(pk * Math.PI) : 1);
+    if (pk < 1) busy = true;
     V.renderer.clear();
     V.sscene.position.copy(V.camera.position); // yıldızlar sonsuz uzakta gibi
     V.renderer.render(V.sscene, V.camera);
@@ -718,7 +770,7 @@
     // uçuş ekranı da aynı gezinme araçlarını kullanır
     nav: { createNav, bindGestures, toolbar, makeStars, placeCamera, isFull, exitFull },
     // uçuş ekranı (flight3d.js) için: aracın tüm parçaları tek grup halinde
-    build(R) { const g = new THREE.Group(); buildParts(R).forEach((p) => g.add(p.obj)); return g; },
+    build(R) { const n = nasaCraft(R.sc.id); if (n) return n; const g = new THREE.Group(); buildParts(R).forEach((p) => g.add(p.obj)); return g; },
     show(host, R) {
       // atölyede arka planda gezegen yok (kullanıcı isteği); sadece araç ve yıldızlar
       try { attach(host); setParts(R); kick(); return true; } catch (e) { console.error(e); state = 'fail'; return false; }

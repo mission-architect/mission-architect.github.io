@@ -81,7 +81,7 @@
   function clearWorld() {
     while (V.world.children.length) {
       const o = V.world.children[0]; V.world.remove(o);
-      o.traverse((c) => { if (c.geometry) c.geometry.dispose(); }); // dokular önbellekte kalır
+      o.traverse((c) => { if (c.geometry && !c.userData.shared) c.geometry.dispose(); }); // dokular ve NASA modelinin ortak geometrisi kalır
     }
   }
 
