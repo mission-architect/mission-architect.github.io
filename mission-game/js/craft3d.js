@@ -169,6 +169,8 @@
     M = {
       mli: std({ map: gold, normalMap: crinkle, normalScale: new THREE.Vector2(0.9, 0.9), metalness: 0.9, roughness: 0.28 }),
       mliSilver: std({ color: 0xd4d8de, normalMap: crinkle, normalScale: new THREE.Vector2(0.7, 0.7), metalness: 0.95, roughness: 0.22 }),
+      mliBlack: std({ color: 0x15161a, normalMap: crinkle, normalScale: new THREE.Vector2(0.8, 0.8), metalness: 0.4, roughness: 0.35 }),
+      tape: std({ color: 0x8a6420, metalness: 0.7, roughness: 0.4 }),
       cells: std({ map: cells, metalness: 0.5, roughness: 0.22 }),
       cellBack: std({ color: 0x6d737a, metalness: 0.35, roughness: 0.7 }),
       frame: std({ color: 0x3a3f46, metalness: 0.7, roughness: 0.4 }),
@@ -229,7 +231,16 @@
 
     // ---- gövde: sekizgen prizma, altın folyo, alüminyum güverteler, arka radyatör, iticiler, yıldız izleyiciler
     const bus = new THREE.Group();
-    const body = mesh(new THREE.CylinderGeometry(rr, rr, hy * 2, 8, 1, true), m.mli); body.rotation.y = Math.PI / 8; bus.add(body);
+    // her yüz ayrı panel: çoğu altın folyo, birkaçı siyah ve gümüş (gerçek araçlardaki gibi karışık battaniyeler)
+    const faceW = 2 * rr * Math.sin(Math.PI / 8), faceMat = [m.mli, m.mli, m.mliBlack, m.mli, m.radiator, m.mli, m.mliSilver, m.mli];
+    for (let k = 0; k < 8; k++) {
+      const a = (k * Math.PI) / 4, f = box(faceW * 1.005, hy * 2, 0.02, faceMat[k]);
+      f.position.set(Math.sin(a) * (ap - 0.01), 0, Math.cos(a) * (ap - 0.01)); f.rotation.y = a; bus.add(f);
+      // bant dikişleri (yatay iki çizgi)
+      if (faceMat[k] !== m.radiator) for (const ty of [-0.33, 0.36]) { const tape = box(faceW * 0.98, 0.012, 0.004, m.tape); tape.position.set(Math.sin(a) * (ap + 0.002), hy * ty, Math.cos(a) * (ap + 0.002)); tape.rotation.y = a; bus.add(tape); }
+      // köşe rayları
+      const ca = a + Math.PI / 8, rail = box(0.035, hy * 2.02, 0.035, m.deck); rail.position.set(Math.sin(ca) * rr, 0, Math.cos(ca) * rr); rail.rotation.y = ca; bus.add(rail);
+    }
     for (const sy of [1, -1]) {
       const deck = mesh(new THREE.CylinderGeometry(rr * 1.04, rr * 1.04, 0.045, 8), m.deck); deck.rotation.y = Math.PI / 8; deck.position.y = sy * (hy + 0.02); bus.add(deck);
       // güverte kenarında ince bant
@@ -237,6 +248,16 @@
     }
     // arka yüzde beyaz radyatör
     const radp = box(2 * rr * Math.sin(Math.PI / 8) * 0.92, hy * 1.6, 0.015, m.radiator); radp.position.set(0, 0, -ap - 0.008); bus.add(radp);
+    // üst güvertede ekipman kutuları ve güneş sensörleri
+    const er = rnd(Math.round(s * 1000));
+    for (let k = 0; k < 5; k++) {
+      const a = er() * Math.PI * 2, d0 = rr * (0.25 + er() * 0.45), w = 0.08 + er() * 0.12, hh = 0.04 + er() * 0.07, dd = 0.08 + er() * 0.1;
+      const eq = box(w, hh, dd, er() < 0.5 ? m.mliSilver : m.mliBlack); eq.position.set(Math.cos(a) * d0, hy + 0.045 + hh / 2, Math.sin(a) * d0); eq.rotation.y = er() * Math.PI; bus.add(eq);
+    }
+    for (const sx of [-1, 1]) { const ss = mesh(new THREE.SphereGeometry(0.03, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), m.lens); ss.position.set(sx * rr * 0.7, hy + 0.045, ap * 0.55); bus.add(ss); }
+    // altta fırlatma bağlantı halkası
+    const ring = mesh(new THREE.CylinderGeometry(rr * 0.62, rr * 0.66, 0.09, 40, 1, true), m.deck); ring.position.y = -hy - 0.09; bus.add(ring);
+    const ringLip = mesh(new THREE.TorusGeometry(rr * 0.66, 0.015, 8, 40), m.silver); ringLip.rotation.x = Math.PI / 2; ringLip.position.y = -hy - 0.135; bus.add(ringLip);
     // köşelerde küçük itici kümeleri (4 adet)
     for (let k = 0; k < 4; k++) {
       const a = Math.PI / 4 + (k * Math.PI) / 2, g = new THREE.Group();
@@ -262,7 +283,9 @@
     if (wing) {
       const [w, h, n] = wing, g = new THREE.Group();
       for (const side of [-1, 1]) {
-        const yoke = cyl(0.022, 0.022, 0.42, m.silver, 8); yoke.rotation.z = Math.PI / 2; yoke.position.x = side * (hx + 0.21); g.add(yoke);
+        // V biçimli bağlantı kafesi + kablo demeti
+        for (const sz of [-1, 1]) { const from = new THREE.Vector3(side * (hx + 0.02), 0, sz * 0.12), to = new THREE.Vector3(side * (hx + 0.42), 0, 0), len = from.distanceTo(to); const st = cyl(0.014, 0.014, len, m.silver, 8); st.position.copy(from).add(to).multiplyScalar(0.5); st.lookAt(to); st.rotateX(Math.PI / 2); g.add(st); }
+        const cable = cyl(0.008, 0.008, 0.4, m.dark, 6); cable.rotation.z = Math.PI / 2; cable.position.set(side * (hx + 0.21), -0.03, 0.02); g.add(cable);
         const drive = cyl(0.05, 0.05, 0.08, m.dark, 12); drive.rotation.z = Math.PI / 2; drive.position.x = side * (hx + 0.03); g.add(drive);
         const wingG = new THREE.Group(); wingG.rotation.x = -0.28; // güneşe dönük
         for (let k = 0; k < n; k++) {
@@ -270,6 +293,8 @@
           const p = box(pw, h, 0.02, [m.cellBack, m.cellBack, m.cellBack, m.cellBack, m.cells, m.cellBack]); p.position.x = x; wingG.add(p);
           // çerçeve
           for (const sy of [1, -1]) { const fr = box(pw, 0.025, 0.03, m.frame); fr.position.set(x, sy * h / 2, 0); wingG.add(fr); }
+          // arka destek çubukları
+          for (const sy of [-0.25, 0.25]) { const rib = box(pw * 0.96, 0.015, 0.02, m.frame); rib.position.set(x, sy * h, -0.02); wingG.add(rib); }
           if (k > 0) { const hinge = cyl(0.012, 0.012, h * 0.8, m.silver, 6); hinge.position.set(side * (hx + 0.42 + pw * k + (k - 0.5) * 0.025), 0, 0); wingG.add(hinge); }
         }
         g.add(wingG);
@@ -314,7 +339,10 @@
         const len = from.distanceTo(to), st = cyl(0.008, 0.008, len, m.silver, 6);
         st.position.copy(from).add(to).multiplyScalar(0.5); st.lookAt(to); st.rotateX(Math.PI / 2); ag.add(st);
       }
-      const feed = cyl(0.05, 0.03, 0.1, m.mli, 12); feed.position.y = base + feedH + 0.02; ag.add(feed);
+      // ikinci yansıtıcı (Cassegrain) ve çanak ortasında altın besleme boynuzu
+      const sub = mesh(new THREE.SphereGeometry(R0 * 0.16, 24, 8, 0, Math.PI * 2, 0, 0.6), m.deck); sub.rotation.x = Math.PI; sub.position.y = base + feedH + 0.04; ag.add(sub);
+      const horn = cyl(0.05, 0.025, 0.16, m.mli, 16); horn.position.y = base + 0.1; ag.add(horn);
+      const wg = cyl(0.012, 0.012, 0.3, m.silver, 6); wg.position.set(0.06, hy + 0.15, -0.05); ag.add(wg);
     }
     add('antenna-' + ant, ag);
 
@@ -330,6 +358,9 @@
         const size = { mono: 0.55, biprop: 1 }[pr] || 0.6;
         const b = bell(0.07 * size, 0.24 * size, 0.46 * size); b.position.y = -hy - 0.07; g.add(b);
         const throat = cyl(0.1 * size + 0.02, 0.07 * size, 0.09, m.grey, 16); throat.position.y = -hy - 0.035; g.add(throat);
+        // ısı battaniyesi ve iki yönlendirme pistonu
+        const blanket = cyl(0.13 * size + 0.03, 0.12 * size + 0.03, 0.06, m.mli, 20); blanket.position.y = -hy - 0.03; g.add(blanket);
+        for (const sx of [-1, 1]) { const act = cyl(0.012, 0.012, 0.16 * size, m.silver, 6); act.position.set(sx * 0.11 * size, -hy - 0.1 * size, 0.05); act.rotation.z = sx * 0.4; g.add(act); }
         if (pr === 'biprop') for (const sx of [-1, 1]) { const tank = mesh(new THREE.SphereGeometry(0.11, 16, 12), m.mliSilver); tank.position.set(sx * rr * 0.45, -hy - 0.06, 0); tank.scale.y = 0.6; g.add(tank); }
       }
       add('prop-' + pr, g);
@@ -345,6 +376,8 @@
       g.position.set(Math.sin(a) * ap, y, Math.cos(a) * ap); g.rotation.y = a;
       if (id === 'camera' || id === 'multispec') {
         const barrel = cyl(0.085 * k, 0.1 * k, 0.28 * k, id === 'camera' ? m.white : m.mliSilver, 24); barrel.rotation.x = Math.PI / 2; barrel.position.z = 0.14 * k; g.add(barrel);
+        const wrap = cyl(0.105 * k, 0.105 * k, 0.1 * k, m.mli, 24); wrap.rotation.x = Math.PI / 2; wrap.position.z = 0.06 * k; g.add(wrap);
+        const brk = box(0.16 * k, 0.03, 0.12 * k, m.deck); brk.position.set(0, -0.1 * k, 0.06 * k); g.add(brk);
         const shade = cyl(0.1 * k, 0.085 * k, 0.07 * k, m.dark, 24); shade.rotation.x = Math.PI / 2; shade.position.z = 0.31 * k; g.add(shade);
         const lens = cyl(0.065 * k, 0.065 * k, 0.01, m.lens, 24); lens.rotation.x = Math.PI / 2; lens.position.z = 0.29 * k; g.add(lens);
       } else if (id === 'spectrometer') {
@@ -656,6 +689,9 @@
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
     // güneş sol-üstten (gezegen resimleriyle aynı yönden)
     const sun = new THREE.DirectionalLight(0xfff4e6, 2.6); sun.position.set(-4, 5, 4); scene.add(sun);
+    // gerçek gölgeler: paneller ve anten gövdeye gölge düşürsün (derinlik hissi)
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.015; sun.shadow.radius = 3;
     const fill = new THREE.DirectionalLight(0x9fb8d9, 0.55); fill.position.set(4, -2, -3); scene.add(fill);
     scene.add(new THREE.HemisphereLight(0xbfd2ff, 0x1a1410, 0.5));
     const craft = new THREE.Group(); scene.add(craft);
@@ -665,7 +701,7 @@
     // yıldızlar ayrı sahnede, en arkada (araçla birlikte döner)
     const sscene = new THREE.Scene(); sscene.add(makeStars(900, 60, 7));
     const nav = createNav(-0.55, 0.28);
-    const v = { planet: null, pBody: null, sscene, nav, host, renderer, cv, scene, camera, craft, parts: new Map(), dist: 0, distT: 6, pops: [], raf: 0, visible: true, hinted: false };
+    const v = { sun, planet: null, pBody: null, sscene, nav, host, renderer, cv, scene, camera, craft, parts: new Map(), dist: 0, distT: 6, pops: [], raf: 0, visible: true, hinted: false };
     nav.onInteract = () => { if (!v.hinted) { v.hinted = true; const h = v.host.querySelector('.ws-3d-hint'); if (h) h.classList.add('gone'); } };
     // sürükle = döndür, iki parmak / sağ tık = kaydır ve yakınlaştır (dikey tek parmak sayfayı kaydırır)
     bindGestures(cv, nav, () => v.host.parentElement, () => kick());
@@ -804,6 +840,13 @@
     const fitV = sph.radius / Math.sin(fov / 2), fitH = sph.radius / Math.sin(Math.atan(Math.tan(fov / 2) * aspect));
     V.distT = Math.max(fitV, fitH) * (V.nasaFit ? 0.95 : 0.78); // NASA araçlarının uzun kolları kesilmesin
     V.radius = sph.radius;
+    // gölge kamerası aracı tam kaplasın; tüm parçalar gölge düşürsün ve alsın
+    if (V.sun) {
+      const sc = V.sun.shadow.camera, r = sph.radius * 1.15;
+      sc.left = -r; sc.right = r; sc.top = r; sc.bottom = -r; sc.near = 0.1; sc.far = r * 6; sc.updateProjectionMatrix();
+      V.sun.position.copy(sph.center).add(new THREE.Vector3(-4, 5, 4).normalize().multiplyScalar(r * 3)); V.sun.target.position.copy(sph.center); V.sun.target.updateMatrixWorld();
+      V.craft.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    }
 
     if (!V.dist) V.dist = V.distT;
   }
