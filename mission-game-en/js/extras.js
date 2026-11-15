@@ -95,3 +95,121 @@
   }
   window.MA_REAL = REAL;
 })();
+
+/* =========================================================================
+   2) SES EFEKTLERİ — dosya yok, Web Audio ile kodla üretilir.
+   Fırlatma gürültüsü, karar uyarısı, varış çanı, görev sonu (başarı/kayıp), patlama, seçim tıkı.
+   Aç/kapat düğmesi tema düğmesinin yanında; seçim localStorage 'ma_sound' ('0' kapalı).
+   Tarayıcı kuralı: ses ancak kullanıcı sayfaya dokunduktan sonra çalar (ilk tıklamada açılır).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const EN = typeof LANG !== 'undefined' && LANG === 'en';
+  const T = EN ? { on: 'Sound on', off: 'Sound off', label: 'Sound effects' } : { on: 'Ses açık', off: 'Ses kapalı', label: 'Ses efektleri' };
+  let enabled = true;
+  try { enabled = localStorage.getItem('ma_sound') !== '0'; } catch (e) { /* */ }
+  let ctx = null, master = null, noiseBuf = null;
+
+  function ac() {
+    if (!enabled) return null;
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    if (!ctx) {
+      try { ctx = new C(); } catch (e) { return null; }
+      master = ctx.createGain(); master.gain.value = 0.5; master.connect(ctx.destination);
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0); let b = 0;
+      for (let i = 0; i < d.length; i++) { b = (b + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = b * 3.5; } // kahverengi gürültü (derin)
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  // ilk kullanıcı hareketinde ses motorunu aç (tarayıcı izni)
+  const unlock = () => { if (enabled) ac(); };
+  document.addEventListener('pointerdown', unlock, { capture: true, passive: true });
+  document.addEventListener('keydown', unlock, { capture: true });
+
+  function tone(freq, t0, dur, { type = 'sine', vol = 0.18, slide = 0 } = {}) {
+    const c = ac(); if (!c) return;
+    const o = c.createOscillator(), g = c.createGain(), at = c.currentTime + t0;
+    o.type = type; o.frequency.setValueAtTime(freq, at);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), at + dur);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(master); o.start(at); o.stop(at + dur + 0.05);
+  }
+  function noise(t0, dur, { from = 400, to = 120, vol = 0.5, attack = 0.4, q = 0.7 } = {}) {
+    const c = ac(); if (!c) return null;
+    const src = c.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = q;
+    const g = c.createGain(), at = c.currentTime + t0;
+    f.frequency.setValueAtTime(from, at); f.frequency.exponentialRampToValueAtTime(Math.max(40, to), at + dur);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + attack); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    src.connect(f); f.connect(g); g.connect(master); src.start(at); src.stop(at + dur + 0.1);
+    return src;
+  }
+
+  const SFX = {
+    tick() { tone(1250, 0, 0.05, { type: 'triangle', vol: 0.05 }); },
+    pop() { tone(520, 0, 0.12, { type: 'sine', vol: 0.12, slide: 1.8 }); },
+    launch() { noise(0, 4.2, { from: 180, to: 900, vol: 0.9, attack: 0.7 }); noise(0.2, 4.0, { from: 90, to: 60, vol: 0.6, attack: 0.5, q: 1.2 }); },
+    alert() { tone(880, 0, 0.16, { type: 'square', vol: 0.06 }); tone(660, 0.2, 0.22, { type: 'square', vol: 0.06 }); },
+    arrive() { [523, 659, 784].forEach((f, i) => tone(f, i * 0.12, 0.6, { vol: 0.1 })); },
+    success() { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.14, 0.7, { type: 'triangle', vol: 0.12 })); },
+    fail() { tone(330, 0, 0.5, { type: 'sawtooth', vol: 0.06, slide: 0.6 }); tone(220, 0.45, 0.8, { type: 'sawtooth', vol: 0.06, slide: 0.6 }); },
+    boom() { noise(0, 2.4, { from: 1400, to: 60, vol: 1, attack: 0.02 }); },
+  };
+  window.MA_SFX = SFX;
+
+  function setEnabled(v) {
+    enabled = v;
+    try { localStorage.setItem('ma_sound', v ? '1' : '0'); } catch (e) { /* */ }
+    if (!v && ctx) { try { ctx.suspend(); } catch (e) { /* */ } }
+    document.querySelectorAll('[data-snd]').forEach((b) => { b.textContent = v ? T.on : T.off; b.setAttribute('aria-pressed', String(v)); });
+    if (v) SFX.pop();
+  }
+  const btnHTML = () => `<button type="button" class="btn small snd-btn" data-snd aria-pressed="${enabled}" title="${T.label}">${enabled ? T.on : T.off}</button>`;
+  if (typeof themeSwitch === 'function') {
+    const baseTheme = themeSwitch;
+    themeSwitch = function () { return baseTheme.apply(this, arguments) + btnHTML(); };
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('[data-snd]');
+    if (b) { setEnabled(!enabled); return; }
+    const sel = e.target.closest && e.target.closest('[data-act="inst"], [data-act="set"]');
+    if (sel && !sel.disabled) { if (sel.getAttribute('aria-pressed') === 'true' || sel.classList.contains('sel')) SFX.tick(); else SFX.pop(); }
+  }, true);
+
+  /* uçuş olaylarına bağlan */
+  let lastPhase = null, endPlayed = false;
+  if (typeof startSimLoop === 'function') {
+    const baseLoop = startSimLoop;
+    startSimLoop = function () {
+      lastPhase = S.sim && S.sim.phase; endPlayed = false;
+      if (S.sim && S.sim.phase === 'launch') SFX.launch();
+      return baseLoop.apply(this, arguments);
+    };
+  }
+  if (typeof afterStep === 'function') {
+    const baseAfter = afterStep;
+    afterStep = function () {
+      const r = baseAfter.apply(this, arguments);
+      const sim = S.sim; if (!sim) return r;
+      if (sim.phase !== lastPhase) {
+        if (sim.phase === 'arrival' || (sim.phase === 'ops' && lastPhase === 'launch')) SFX.arrive();
+        lastPhase = sim.phase;
+      }
+      if (sim.done && !endPlayed) {
+        endPlayed = true;
+        if (sim.endReason === 'launch') SFX.boom();
+        else if (sim.endReason === 'complete') SFX.success();
+        else SFX.fail();
+      }
+      return r;
+    };
+  }
+  if (typeof showEventModal === 'function') {
+    const baseEvent = showEventModal;
+    showEventModal = function () { SFX.alert(); return baseEvent.apply(this, arguments); };
+  }
+  // ilk ekran ui.js yüklenirken çizildi; ses düğmesi görünsün diye bir kez yeniden çiz (uçuşta değil: ikinci döngü başlatır)
+  if (typeof render === 'function' && typeof S !== 'undefined' && S.screen !== 'sim') render();
+})();
