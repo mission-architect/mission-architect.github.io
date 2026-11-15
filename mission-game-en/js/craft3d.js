@@ -675,6 +675,40 @@
     return act.size > 0 || !!nav.pinch;
   }
 
+  /* ---------------- yavaş cihaz: kaliteyi kendiliğinden düşür ----------------
+     renderer.render sarılır; kare aralıkları ölçülür (aynı karedeki ikinci geçiş sayılmaz, arka plan sekmesi yok sayılır).
+     Arka arkaya iki ölçümde ortalama < ~30 fps ise piksel oranı bir kademe iner (2 → 1,5 → 1 → 0,75), en sonda gölgeler kapanır.
+     Varılan kademe oturum boyunca saklanır (sessionStorage 'ma_q') ki sonraki 3B görünüm düşük başlasın. */
+  const Q_STEPS = [2, 1.5, 1, 0.75];
+  function qLevel() { try { return Math.max(0, Math.min(Q_STEPS.length, +(sessionStorage.getItem('ma_q') || 0))); } catch (e) { return 0; } }
+  function qRatio() { const lv = qLevel(); return Math.min(window.devicePixelRatio || 1, Q_STEPS[Math.min(lv, Q_STEPS.length - 1)]); }
+  function adapt(renderer, opts) {
+    opts = opts || {};
+    renderer.setPixelRatio(qRatio());
+    if (qLevel() >= Q_STEPS.length && opts.noShadows) opts.noShadows();
+    const base = renderer.render.bind(renderer);
+    let last = 0, n = 0, sum = 0, slow = 0;
+    renderer.render = function (scene, cam) {
+      const t = performance.now(), dt = t - last;
+      if (last && dt > 4) {
+        last = t;
+        if (!document.hidden && dt < 250) { n++; sum += dt; }
+        if (n >= 90) {
+          const avg = sum / n; n = 0; sum = 0;
+          slow = avg > 34 ? slow + 1 : 0;
+          if (slow >= 2) {
+            slow = 0;
+            const lv = qLevel() + 1;
+            try { sessionStorage.setItem('ma_q', String(Math.min(lv, Q_STEPS.length))); } catch (e) { /* */ }
+            if (lv < Q_STEPS.length) { if (renderer.getPixelRatio() > qRatio()) renderer.setPixelRatio(qRatio()); }
+            else if (opts.noShadows) opts.noShadows();
+          }
+        }
+      } else if (!last) last = t;
+      return base(scene, cam);
+    };
+  }
+
   /* ---------------- sahne ---------------- */
   let V = null; // { host, renderer, scene, camera, craft, ... }
   function createView(host) {
@@ -693,6 +727,7 @@
     // gerçek gölgeler: paneller ve anten gövdeye gölge düşürsün (derinlik hissi)
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.015; sun.shadow.radius = 3;
+    adapt(renderer, { noShadows() { sun.castShadow = false; } });
     const fill = new THREE.DirectionalLight(0x9fb8d9, 0.55); fill.position.set(4, -2, -3); scene.add(fill);
     scene.add(new THREE.HemisphereLight(0xbfd2ff, 0x1a1410, 0.5));
     const craft = new THREE.Group(); scene.add(craft);
@@ -908,6 +943,7 @@
     // atmosfer gökyüzü (Preetham, THREE.Sky)
     loadSky: (cb) => withScript('Sky.js', 'Sky', cb),
     // uçuş ekranı da aynı gezinme araçlarını kullanır
+    adapt, // yavaş cihazda kaliteyi düşür (flight3d.js de kullanır)
     nav: { createNav, bindGestures, toolbar, makeStars, placeCamera, isFull, exitFull },
     // uçuş ekranı (flight3d.js) için: aracın tüm parçaları tek grup halinde
     build(R) { const n = nasaCraft(R.sc.id); if (n) return n; const g = new THREE.Group(); buildParts(R).forEach((p) => g.add(p.obj)); return g; },

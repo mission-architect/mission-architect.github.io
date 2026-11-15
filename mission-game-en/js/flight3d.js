@@ -52,6 +52,7 @@
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.setClearColor(0x05080d, 1);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    if (Craft3D.adapt) Craft3D.adapt(renderer); // yavaş cihazda çözünürlüğü düşür
     const cv = renderer.domElement; cv.className = 'viz-3d'; cv.setAttribute('aria-hidden', 'true');
     // Three.js tuvale satır içi display:block yazar; gizleme (hidden) çalışsın diye kaldır (yoksa yolculukta fırlatmanın son karesi donup kalıyordu)
     cv.style.display = '';
