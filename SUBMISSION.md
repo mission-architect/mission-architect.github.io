@@ -84,7 +84,7 @@ It is disclosed in three places:
 - the site has an `ai-assistance` meta tag;
 - `AI_USE.md` in the repository gives the details.
 
-No AI image, audio or video generator was used for game graphics. The spacecraft and scenes are drawn by code, and the planet textures and rocket models are NASA's. `[TEAM: add a line about the opening video if it was AI-generated.]`
+No AI image, audio or video generator was used for game graphics. The spacecraft and scenes are drawn by code, and the planet textures and rocket models are NASA's. The narration voice in the demo video was generated with ElevenLabs (AI text-to-speech) and is labelled "AI-generated voice" in the video; the pictures are real screen recordings of the game. `[TEAM: add a line about the opening video if it was AI-generated.]`
 
 ## NASA Data
 - **Planet textures**, used in the 3D views:
