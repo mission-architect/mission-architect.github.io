@@ -92,7 +92,7 @@ Site simgelerini yeniden üretmek için: `python scripts/make_assets.py` (Pillow
 - Model okuyucu ve gökyüzü: Three.js r147 `GLTFLoader` ve `Sky` (Preetham atmosfer modeli) (MIT, `mission-game/vendor/`).
   - NASA görselleri [NASA Images and Media Usage Guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/) kapsamında kullanıldı; bu proje NASA tarafından onaylanmış ya da desteklenmiş değildir.
 - Yazı tipi: Atkinson Hyperlegible Next (Google Fonts, SIL Open Font License).
-- Projenin kendi kodu için henüz bir lisans seçilmedi (açık kaynak yapmak istersen örneğin MIT eklenebilir).
+- Projenin kendi kodu: [MIT lisansı](LICENSE). NASA görselleri ve modelleri, dış kütüphaneler ve açılış videosu bu lisansa dahil değil; kendi koşullarıyla kullanılır.
 
 ## Yapay zekâ kullanımı
 Kodun büyük kısmı ve oyun metinleri yapay zekâ kod asistanı Claude (Anthropic) ile yazıldı. Fikir, kurallar ve tasarım kararları takıma ait. Ayrıntılar (İngilizce, jüri için): [AI_USE.md](AI_USE.md). Kaynak dosyaların başında ve `index.html` meta etiketinde de belirtiliyor.

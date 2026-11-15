@@ -78,5 +78,8 @@ node scripts/balance_test.js --lang en
   - Atkinson Hyperlegible Next font (SIL OFL).
 - NASA images are used under the [NASA Images and Media Usage Guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/). **This project is not endorsed by NASA.**
 
+## License
+The project's own code is under the [MIT License](LICENSE). NASA images and models, third-party libraries and the opening video are not covered; they keep their own terms (see above).
+
 ## Use of AI
 Most of the source code and the in-game texts were written with **Claude (Anthropic)**, an AI coding assistant, following the team's instructions. The team chose the idea and the rules and tested every change. Every hand-written source file starts with an `AI-assisted` comment. See [AI_USE.md](AI_USE.md) for details.
