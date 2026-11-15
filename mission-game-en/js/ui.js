@@ -98,6 +98,7 @@ function renderTitle() {
       <div class="tag">A space mission design game</div>
       <h1>Mission Architect</h1>
       <p>Pick a target, design your craft, launch.</p>
+      <div class="hero-team"><span class="chip">Team: <b>Zümrüdüanka V2</b></span><span class="chip">Challenge: <b>Space Mission Design Game</b> · NASA Space Apps 2026</span></div>
     </div>
 
     <div class="section-title"><span class="n">1</span> Choose your mission</div>
@@ -508,8 +509,8 @@ function startSimLoop() {
     const ui = S.ui; if (!ui || S.screen !== 'sim') return;
     ui.dt = Math.min(0.1, (ts - ui.last) / 1000); ui.last = ts;
     if (!ui.paused && !sim.pending) {
-      if (sim.phase === 'launch' || (sim.endReason === 'launch' && ui.launchAnim < 1)) {
-        ui.launchAnim = Math.min(1, ui.launchAnim + ui.dt / (REDUCED_MOTION ? 0.8 : 3) * Math.min(ui.speed, 2));
+      if (sim.phase === 'launch' || ui.launchAnim < 1) { // fırlatma sahnesi sonuna kadar oynar, sonra aylar ilerler
+        ui.launchAnim = Math.min(1, ui.launchAnim + ui.dt / (REDUCED_MOTION ? 0.8 : 4) * Math.min(ui.speed, 2));
         if (ui.launchAnim >= 0.5 && !ui.launchRolled) { ui.launchRolled = true; simStep(sim); afterStep(); }
       } else if (!sim.done) {
         const dur = (sim.phase === 'cruise' ? 0.28 : 0.9) / ui.speed;

@@ -247,7 +247,7 @@ function drawFlight(canvas, sim, ui) {
   const now = REDUCED_MOTION ? 0 : (ui.nowP != null ? ui.nowP : performance.now() / 1000);
   const sc = sim.sc, R = sim.R;
   g.font = '13px "Atkinson Hyperlegible Next", system-ui, sans-serif';
-  const phase = sim.phase === 'ended' ? (sim.endReason === 'launch' ? 'launch' : sim.opsMonth > 0 || sim.inserted ? 'ops' : 'cruise') : sim.phase;
+  const phase = ui.launchAnim < 1 ? 'launch' : sim.phase === 'ended' ? (sim.endReason === 'launch' ? 'launch' : sim.opsMonth > 0 || sim.inserted ? 'ops' : 'cruise') : sim.phase;
 
   if (phase === 'launch') {
     const p = ui.launchAnim;

@@ -101,6 +101,9 @@ p { margin: 0; }
 .hero { padding: 12px 0 8px; max-width: 720px; display: grid; gap: 10px; }
 .hero h1 { font-size: clamp(34px, 5vw, 48px); letter-spacing: -.01em; }
 .hero p { color: var(--muted); font-size: 19px; }
+.hero-team { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-team .chip { font-size: 14px; white-space: normal; }
+.hero-team b { color: var(--ink); }
 .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .setup-grid > .panel { padding: 20px; }
 .section-title { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
@@ -579,15 +582,19 @@ html.intro-pending body > *:not(#intro) { visibility: hidden; }
 #intro .intro-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; transition: opacity .5s ease; }
 #intro.ended .intro-video { opacity: 0; }
 #intro .intro-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-#intro .intro-top { position: absolute; top: max(14px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); display: flex; gap: 8px; z-index: 2; }
+#intro .intro-top { position: absolute; bottom: max(14px, env(safe-area-inset-bottom, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); display: flex; gap: 8px; z-index: 2; }
 #intro .intro-btn { min-height: 44px; padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, .28); background: rgba(10, 14, 20, .6); color: #f2f4f7; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
 #intro .intro-btn:hover { background: rgba(30, 40, 52, .85); }
 #intro .intro-start { position: relative; z-index: 2; min-height: 56px; min-width: 180px; padding: 12px 36px; border-radius: 14px; border: 0; background: var(--cta, #c2410c); color: var(--cta-ink, #fff); font: inherit; font-size: 22px; font-weight: 700; letter-spacing: .02em; cursor: pointer; animation: intro-in .6s ease both; }
 #intro .intro-start:hover { filter: brightness(1.08); }
+#intro .intro-team { position: absolute; left: 16px; right: 16px; bottom: calc(50% + 56px); z-index: 2; display: grid; justify-items: center; gap: 6px; text-align: center; color: #f2f4f7; animation: intro-in .6s ease both; }
+#intro .intro-team b { font-size: clamp(28px, 6vw, 44px); font-weight: 700; letter-spacing: .01em; }
+#intro .intro-team-k { font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: #aab4c0; }
+#intro .intro-team span:last-child { font-size: clamp(14px, 2.4vw, 17px); color: #c9d1da; }
 #intro button:focus-visible { outline: 3px solid #8fb8ff; outline-offset: 3px; }
 #intro [hidden] { display: none; }
 @keyframes intro-in { from { opacity: 0; transform: translateY(8px); } }
-@media (prefers-reduced-motion: reduce) { #intro, #intro .intro-video { transition: none; } #intro .intro-start { animation: none; } }
+@media (prefers-reduced-motion: reduce) { #intro, #intro .intro-video { transition: none; } #intro .intro-start, #intro .intro-team { animation: none; } }
 
 /* Raporda gerçek görevle karşılaştırma (extras.js) */
 .real-cmp .real-name { margin: 0 0 4px; }

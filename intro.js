@@ -1,6 +1,6 @@
 /* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — açılış ekranı.
-   1) Açılış videosu (mission-game/media/acilis-ekrani.mp4) tam ekran SESLİ oynar. Tarayıcı izin vermezse (sayfaya henüz dokunulmadı) "▶ İzle" düğmesi çıkar, basınca baştan sesli oynar. "Sesi kapat/aç" ve "Geç" düğmeleri.
+   1) Açılış videosu (mission-game/media/acilis-ekrani-v2.mp4) tam ekran SESLİ oynar. Tarayıcı izin vermezse (sayfaya henüz dokunulmadı) "▶ İzle" düğmesi çıkar, basınca baştan sesli oynar. "Sesi kapat/aç" ve "Geç" düğmeleri.
    2) Video siyah ekranla biter → siyah ekranın ortasında "Başla" düğmesi.
    3) Başla'ya basınca bir roket ateş ve duman püskürterek yukarı uzaklaşır, ekran kararıp açılır ve site görünür.
    - Site her açıldığında oynar. Sadece dil değişimi yenilemesinde atlanır (ui.js switchLang sessionStorage 'ma_intro_skip' koyar, burada silinir).
@@ -16,18 +16,20 @@
   var lang = 'tr';
   try { lang = localStorage.getItem('ma_lang') || root.getAttribute('data-default-lang') || 'tr'; } catch (e) { /* */ }
   var T = lang === 'en'
-    ? { start: 'Start', skip: 'Skip', sound: 'Sound on', mute: 'Sound off', label: 'Intro', play: '▶ Watch' }
-    : { start: 'Başla', skip: 'Geç', sound: 'Sesi aç', mute: 'Sesi kapat', label: 'Açılış', play: '▶ İzle' };
+    ? { start: 'Start', skip: 'Skip', sound: 'Sound on', mute: 'Sound off', label: 'Intro', play: '▶ Watch', team: 'Team' }
+    : { start: 'Başla', skip: 'Geç', sound: 'Sesi aç', mute: 'Sesi kapat', label: 'Açılış', play: '▶ İzle', team: 'Takım' };
   var reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   window.MA_INTRO_ACTIVE = true;
 
   var box = document.createElement('div');
   box.id = 'intro'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', T.label);
   box.innerHTML =
-    '<video class="intro-video" playsinline preload="auto" src="mission-game/media/acilis-ekrani.mp4"></video>' +
+    '<video class="intro-video" playsinline preload="auto" src="mission-game/media/acilis-ekrani-v2.mp4"></video>' +
     '<canvas class="intro-fx" aria-hidden="true"></canvas>' +
     '<div class="intro-top"><button type="button" class="intro-btn" data-i="sound">' + T.sound + '</button>' +
     '<button type="button" class="intro-btn" data-i="skip">' + T.skip + '</button></div>' +
+    '<div class="intro-team" hidden><span class="intro-team-k">' + T.team + '</span><b>Zümrüdüanka V2</b>' +
+    '<span>NASA Space Apps Challenge 2026 · Space Mission Design Game</span></div>' +
     '<button type="button" class="intro-start" data-i="start" hidden>' + T.start + '</button>' +
     '<button type="button" class="intro-start intro-play" data-i="play" hidden>' + T.play + '</button>';
   (document.body || root).appendChild(box);
@@ -43,6 +45,7 @@
     try { video.pause(); } catch (e) { /* */ }
     box.classList.add('ended');
     top.hidden = true;
+    box.querySelector('.intro-team').hidden = false;
     startBtn.hidden = false;
     startBtn.focus({ preventScroll: true });
   }
@@ -100,6 +103,7 @@
     if (stage !== 'start') return;
     stage = 'launch';
     startBtn.hidden = true;
+    box.querySelector('.intro-team').hidden = true;
     if (reduced) return finish();
     var dpr = Math.min(window.devicePixelRatio || 1, 2), W = 0, H = 0;
     function size() { W = fx.clientWidth; H = fx.clientHeight; fx.width = Math.round(W * dpr); fx.height = Math.round(H * dpr); }

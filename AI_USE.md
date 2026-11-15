@@ -21,7 +21,7 @@ NASA Space Apps asks teams to state clearly where and how AI tools were used. Th
 - **Third-party libraries:** Three.js, Lucide icons and the Atkinson Hyperlegible font are open-source. They are used under their own licenses.
 
 ## Images and video
-- **Opening video** (`mission-game/media/acilis-ekrani.mp4`): *[TEAM TO CONFIRM: how it was made. If it was made with an AI video tool, the game shows a visible "AI-generated" label on it, and it must not contain NASA logos.]*
+- **Opening video** (`mission-game/media/acilis-ekrani-v2.mp4`): made with an AI video tool. It carries a visible "AI-Assisted Content" watermark in the top-right corner for its whole length; the intro's buttons sit at the bottom so they never cover it.
 - **Demo video narration**: the voice in the 30-second demo video was generated with ElevenLabs (AI text-to-speech). The pictures in the demo are real screen recordings of the game.
 - No other AI-generated images, audio or video are used.
 

@@ -272,7 +272,7 @@
   }
 
   /* ---------------- 3B fırlatma sahnesi ----------------
-     ui.launchAnim 0→1 (ui.js): 0–0,1 ateşleme, sonra roket hızlanarak yükselir; ~0,5'te fırlatma sonucu belli olur.
+     ui.launchAnim 0→1 (ui.js): 0–0,1 ateşleme, sonra roket hızlanarak yükselir; ~0,5'te fırlatma sonucu belli olur; sahne 1'e kadar oynar (yükselip Dünya'yı yukarıdan gösterir), aylar ondan sonra ilerler.
      Arıza (sim.endReason === 'launch') 0,55'ten sonra patlama.
      Roketler NASA 3D Resources modelleri (mission-game/models): küçük roketler Explorer 1'i fırlatan Jupiter-C,
      büyükler Saturn V. Model yüklenene kadar (ya da yüklenemezse) kodla çizilen roket görünür.
@@ -724,12 +724,13 @@
     delete canvas.dataset.cleared;
   }
 
-  function phaseOf(sim) {
+  function phaseOf(sim, ui) {
+    if (ui && ui.launchAnim < 1) return 'launch'; // fırlatma sahnesi sonuna kadar
     return sim.phase === 'ended' ? (sim.endReason === 'launch' ? 'launch' : sim.opsMonth > 0 || sim.inserted ? 'ops' : 'cruise') : sim.phase;
   }
 
   window.drawFlight = function (canvas, sim, ui) {
-    const ph = phaseOf(sim);
+    const ph = phaseOf(sim, ui);
     if (!failed && ph !== 'cruise' && window.Craft3D && Craft3D.ready()) {
       try { if (ph === 'launch' ? renderLaunch(canvas, sim, ui) : render3D(canvas, sim, ui)) return; } catch (e) { console.error(e); failed = true; }
     }

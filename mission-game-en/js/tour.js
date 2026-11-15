@@ -223,7 +223,7 @@
       const wait = () => {
         if (S.screen !== 'sim' || tour) return;
         if (!S.sim || S.sim.done) return;
-        if (S.sim.phase === 'launch' || S.sim.pending) { setTimeout(wait, 500); return; }
+        if (S.sim.phase === 'launch' || S.sim.pending || (S.ui && S.ui.launchAnim < 1)) { setTimeout(wait, 500); return; }
         setTimeout(() => { if (!tour && S.screen === 'sim' && S.sim && !S.sim.pending && !S.sim.done) start('flight'); }, 1200);
       };
       setTimeout(wait, 800);
