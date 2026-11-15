@@ -597,3 +597,16 @@ html.intro-pending body > *:not(#intro) { visibility: hidden; }
 table.budget.real-table td, table.budget.real-table td:last-child { text-align: left; font-family: inherit; }
 .real-table td:nth-child(2), .real-table td:nth-child(3) { white-space: nowrap; }
 @media (max-width: 520px) { .real-table td:nth-child(2), .real-table td:nth-child(3) { white-space: normal; } }
+
+/* Rozetler (extras.js) */
+.badges-panel { margin-top: 12px; }
+.badges-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.badges { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.badge { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; opacity: .55; }
+.badge.got { opacity: 1; border-color: var(--line2); }
+.badge.new { border-color: var(--accent); }
+.badge .b-mark { font-size: 20px; line-height: 1.2; color: var(--muted); }
+.badge.got .b-mark { color: #e8b04a; }
+.badge .b-txt { display: grid; gap: 2px; font-size: 15px; }
+.badge .b-how { color: var(--muted); font-size: 13px; }
+.badge .b-new { justify-self: start; display: inline-block; margin: 2px 0; padding: 0 6px; border-radius: 6px; background: var(--accent); color: var(--accent-ink, #fff); font-size: 12px; font-weight: 700; }

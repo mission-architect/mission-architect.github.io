@@ -213,3 +213,92 @@
   // ilk ekran ui.js yüklenirken çizildi; ses düğmesi görünsün diye bir kez yeniden çiz (uçuşta değil: ikinci döngü başlatır)
   if (typeof render === 'function' && typeof S !== 'undefined' && S.screen !== 'sim') render();
 })();
+
+/* =========================================================================
+   3) ROZETLER — görev sonunda kazanılır, raporda gösterilir.
+   localStorage 'ma_badges' = { id: 1 }, 'ma_worlds' = { senaryo: 1 } (başarıyla bitenler).
+   Serbest modda rozet verilmez (sıralama tablosu gibi).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const EN = typeof LANG !== 'undefined' && LANG === 'en';
+  const L = EN ? 'en' : 'tr';
+  const T = EN
+    ? { title: '🏅 Badges', fresh: 'New!', count: (a, b) => `${a} / ${b} earned`, sandbox: 'No badges in sandbox mode.' }
+    : { title: '🏅 Rozetler', fresh: 'Yeni!', count: (a, b) => `${a} / ${b} kazanıldı`, sandbox: 'Serbest modda rozet yok.' };
+  const BADGES = [
+    { id: 'first', tr: ['İlk uçuş', 'Bir görevi sonuna kadar uçur.'], en: ['First flight', 'Fly a mission to the end.'],
+      test: (c) => c.sim.done },
+    { id: 'success', tr: ['Tam başarı', 'Tüm ana hedefleri tuttur.'], en: ['Full success', 'Meet every main goal.'],
+      test: (c) => c.score.success >= 150 },
+    { id: 'club900', tr: ['900 kulübü', '900 puan ya da üstü al.'], en: ['900 club', 'Score 900 or more.'],
+      test: (c) => c.score.total >= 900 },
+    { id: 'science', tr: ['Bilim ustası', 'Bilimden 590 puan al.'], en: ['Science master', 'Get 590 science points.'],
+      test: (c) => c.score.science >= 590 },
+    { id: 'thrifty', tr: ['Tutumlu', 'Başar ve bütçenin %30\'u artsın.'], en: ['Thrifty', 'Succeed with 30% of the budget left.'],
+      test: (c) => c.score.success >= 150 && c.R.budget !== Infinity && c.sim.reserve / c.R.budget >= 0.3 },
+    { id: 'small', tr: ['Küçük roket', 'Paylaşımlı ya da küçük roketle başar.'], en: ['Small rocket', 'Succeed on a rideshare or small rocket.'],
+      test: (c) => c.score.success >= 150 && ['rideshare', 'small'].includes(c.R.d.launcher) },
+    { id: 'data', tr: ['Veri akıyor', 'Verinin %95\'ini Dünya\'ya indir.'], en: ['Data flows', 'Bring 95% of the data home.'],
+      test: (c) => c.sim.dataGen > 0 && (c.score.lostFrac || 0) <= 0.05 },
+    { id: 'calm', tr: ['Sakin uçuş', 'En fazla bir acil karar.'], en: ['Smooth ride', 'At most one emergency decision.'],
+      test: (c) => c.sim.done && c.sim.endReason === 'complete' && c.sim.decisions.length <= 1 },
+    { id: 'hard', tr: ['Uçuş direktörü', 'En zor seviyede başar.'], en: ['Flight director', 'Succeed on the hardest level.'],
+      test: (c) => c.diff === 'hard' && c.score.success >= 150 },
+    { id: 'team', tr: ['Takım oyunu', 'Takımla bir görev bitir.'], en: ['Team player', 'Finish a mission as a team.'],
+      test: (c) => c.mode === 'team' && c.sim.done },
+    { id: 'europa', tr: ['Okyanus kâşifi', 'Europa görevinde başar.'], en: ['Ocean explorer', 'Succeed at Europa.'],
+      test: (c) => c.scen === 'europa' && c.score.success >= 150 },
+    { id: 'worlds', tr: ['Dört dünya', 'Dört görevin hepsinde başar.'], en: ['Four worlds', 'Succeed in all four missions.'],
+      test: (c) => ['earth', 'moon', 'mars', 'europa'].every((k) => c.worlds[k]) },
+  ];
+  const load = (k) => { try { return JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) { return {}; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* */ } };
+  const awarded = new WeakMap(); // S.result → bu raporda yeni kazanılanlar
+
+  function evaluate() {
+    const res = S.result; if (!res || !S.sim) return null;
+    if (awarded.has(res)) return awarded.get(res);
+    const fresh = [];
+    if (S.difficulty !== 'sandbox') {
+      const have = load('ma_badges'), worlds = load('ma_worlds');
+      if (res.score.success >= 150) { worlds[S.scenario] = 1; save('ma_worlds', worlds); }
+      const c = { sim: S.sim, R: S.sim.R, score: res.score, diff: S.difficulty, mode: S.mode, scen: S.scenario, worlds };
+      for (const b of BADGES) {
+        let ok = false; try { ok = !!b.test(c); } catch (e) { ok = false; }
+        if (ok && !have[b.id]) { have[b.id] = 1; fresh.push(b.id); }
+      }
+      save('ma_badges', have);
+    }
+    awarded.set(res, fresh);
+    return fresh;
+  }
+
+  function badgePanel() {
+    const fresh = evaluate(); if (!fresh) return '';
+    const have = load('ma_badges');
+    const n = BADGES.filter((b) => have[b.id]).length;
+    const items = BADGES.map((b) => {
+      const got = !!have[b.id], isNew = fresh.includes(b.id), [name, how] = b[L];
+      return `<li class="badge${got ? ' got' : ''}${isNew ? ' new' : ''}"><span class="b-mark" aria-hidden="true">${got ? '★' : '☆'}</span>
+        <span class="b-txt"><b>${name}</b>${isNew ? ` <span class="b-new">${T.fresh}</span>` : ''}<span class="b-how">${how}</span></span>
+        <span class="sr-only">${got ? '✓' : '—'}</span></li>`;
+    }).join('');
+    return `<div class="panel pad badges-panel">
+      <div class="badges-head"><h3>${T.title}</h3><span class="muted">${T.count(n, BADGES.length)}</span></div>
+      ${S.difficulty === 'sandbox' ? `<p class="muted">${T.sandbox}</p>` : ''}
+      <ul class="badges">${items}</ul></div>`;
+  }
+
+  if (typeof renderReport === 'function') {
+    const baseReport = renderReport;
+    renderReport = function () {
+      const html = baseReport.apply(this, arguments);
+      const panel = badgePanel(); if (!panel) return html;
+      // en üstteki puan dökümünün hemen altına
+      const i = html.indexOf('<div class="two">');
+      return i < 0 ? html + panel : html.slice(0, i) + panel + html.slice(i);
+    };
+  }
+  window.MA_BADGES = BADGES;
+})();
