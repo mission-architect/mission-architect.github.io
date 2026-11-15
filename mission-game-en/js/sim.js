@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 'use strict';
 /* =========================================================================
    Mission simulation: month-by-month flight with random events that the

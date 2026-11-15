@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 'use strict';
 /* =========================================================================
    Görev simülasyonu: ay ay uçuş, sorumlu rolün karar verdiği rastgele

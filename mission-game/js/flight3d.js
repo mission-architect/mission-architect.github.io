@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — uçuş ekranında 3B yörünge görünümü (Three.js, craft3d.js'in yüklediği kopya).
    İki dil klasöründe de AYNI dosya. viz.js'teki drawFlight'ı sarar:
    - fırlatma ve yolculuk evreleri eskisi gibi 2B canvas,

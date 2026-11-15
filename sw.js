@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — çevrimdışı çalışma (service worker).
    İlk ziyarette oyun dosyalarını önbelleğe alır; sonra internet olmasa da açılır.
    Sitenin kendi dosyaları: önce internetten (her zaman en yeni sürüm), internet yoksa önbellekten.

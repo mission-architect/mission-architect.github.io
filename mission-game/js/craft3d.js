@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — atölyedeki 3B uzay aracı (Three.js r149, mission-game/vendor/three.min.js).
    İki dil klasöründe de AYNI dosya. Three.js ilk kez gerektiğinde yüklenir; yüklenemezse ya da
    WebGL yoksa atölye eski SVG çizimini (viz.js craftSVG) göstermeye devam eder.

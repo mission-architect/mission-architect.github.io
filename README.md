@@ -92,6 +92,9 @@ Site simgelerini yeniden üretmek için: `python scripts/make_assets.py` (Pillow
 - Yazı tipi: Atkinson Hyperlegible Next (Google Fonts, SIL Open Font License).
 - Projenin kendi kodu için henüz bir lisans seçilmedi (açık kaynak yapmak istersen örneğin MIT eklenebilir).
 
+## Yapay zekâ kullanımı
+Kodun büyük kısmı ve oyun metinleri yapay zekâ kod asistanı Claude (Anthropic) ile yazıldı. Fikir, kurallar ve tasarım kararları takıma ait. Ayrıntılar (İngilizce, jüri için): [AI_USE.md](AI_USE.md). Kaynak dosyaların başında ve `index.html` meta etiketinde de belirtiliyor.
+
 ## Yarışma gereksinimlerinin karşılanması
 - **Görevi tanımlama:** 4 senaryo (Dünya, Ay, Mars, Europa); ana ve ikincil bilimsel hedefler
 - **Uzay aracı tasarımı:** gövde, bilgisayar, yönelim, itki, kalkan, yedeklilik, güç, batarya, anten

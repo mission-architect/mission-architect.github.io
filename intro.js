@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — açılış ekranı.
    1) Açılış videosu (mission-game/media/acilis-ekrani.mp4) tam ekran oynar (sessiz başlar; "Sesi aç" ve "Geç" düğmeleri).
    2) Video siyah ekranla biter → siyah ekranın ortasında "Başla" düğmesi.

@@ -115,6 +115,12 @@ Scriptler klasik `<script>` olarak bu sırayla yüklenir ve global değişkenler
   `python "$HOME/.claude/skills/ui-ux-pro-max/scripts/search.py" "<sorgu>" --domain ux`
 - Lisanslar: Lucide (ISC), Atkinson Hyperlegible Next (SIL OFL). README.md'de listeli.
 
+## Space Apps teslimi (2026-11-15)
+- Resmi rehber (https://www.spaceappschallenge.org/resources/project-submission-guide/, tarayıcıyla okundu; WebFetch TLS hatası veriyor): teslim **15 Kasım 23:59** (yerel etkinlik saati), her şey İngilizce, demo ≤30 sn video (İngilizce altyazı) ya da ≤7 slayt, herkese açık bağlantı. 18 yaş altı kişi görüntüsü/sesi olamaz.
+- Yapay zekâ ("Super Intelligence") serbest ama **açıkça belirtilmeli**: kod/veri için açıklama metni + meta veri; YZ ile üretilen görsel/videoda görünür filigran; YZ ile üretilen içerikte NASA logosu/markası olamaz. Bizdeki karşılığı: `AI_USE.md`, README "Yapay zekâ kullanımı", `index.html` `ai-assistance` meta etiketi ve her elle yazılmış kaynak dosyanın ilk satırı `/* AI-assisted: ... */`. **Yeni JS/CSS dosyası eklersen bu satırı da ekle.**
+- `SUBMISSION.md`: form alanlarına yapıştırılacak İngilizce metin. Jüri bağlantısı `https://grkm2802.github.io/oyun/?lang=en` (`loader.js` `?lang=tr|en`'i okur, kaydeder ve adresten siler).
+- Python heredoc'ta `'\b'` yazma: dosyaya gerçek geri silme karakteri (0x08) girdi ve regex bozuldu.
+
 ## Açık konular
 - Space Apps kurallarında yapay zekâ kullanımı / önceden hazırlanmış kod durumu doğrulanmadı; kullanıcıya teslim öncesi kontrol etmesi söylendi.
 - Takım modu iki türlü: aynı cihazda sırayla (eski) ve çevrimiçi oda (online.js). **Çevrimiçi mod canlıda açık** (2026-11-13). Firebase projesi: `nasa-space-apps-1089d` (kullanıcının Google hesabı), Realtime Database us-central1, anonim giriş açık, yetkili alan adı grkm2802.github.io, `database.rules.json` yayınlı. Canlı sitede iki sekmeyle gerçek Firebase testi geçti (oda, roller, izin, eşitleme, sohbet, onay, ortak uçuş: iki tarafta aynı 3 karar ve aynı puan 907, oda kapatma). Firebase Auth kalıcılığı SESSION: her sekme ayrı oyuncu, yenilemede aynı oyuncu (bu yüzden çıkarılan biri yeni sekmeyle yeni kimlikle girebilir; bilinen sınırlama).

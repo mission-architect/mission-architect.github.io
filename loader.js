@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — dil ve tema yükleyici (site sürümü).
    - Dil: localStorage 'ma_lang' (yoksa <html data-default-lang>) → mission-game/ (tr) veya mission-game-en/ (en)
    - Tema: localStorage 'ma_theme' (yoksa koyu) → <html data-theme>, sayfa çizilmeden önce uygulanır
@@ -8,6 +9,8 @@
   var lang = DEFAULT_LANG, theme = 'dark';
   try { lang = localStorage.getItem('ma_lang') || DEFAULT_LANG; } catch (e) { lang = DEFAULT_LANG; }
   try { theme = localStorage.getItem('ma_theme') || 'dark'; } catch (e) { theme = 'dark'; }
+  // ?lang=en / ?lang=tr bağlantısı (jüri için doğrudan İngilizce açılır) seçimi kalıcı yapar
+  try { var qm = /[?&]lang=(tr|en)/.exec(location.search); if (qm) { lang = qm[1]; localStorage.setItem('ma_lang', lang); var qs = location.search.replace(/([?&])lang=(tr|en)&?/, '$1').replace(/[?&]$/, ''); history.replaceState(null, '', location.pathname + qs + location.hash); } } catch (e) { /* yok */ }
   if (lang !== 'tr' && lang !== 'en') lang = DEFAULT_LANG;
   root.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
   window.MA_LOADER = true;

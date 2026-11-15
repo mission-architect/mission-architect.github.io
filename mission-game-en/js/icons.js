@@ -1,3 +1,4 @@
+/* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 'use strict';
 /* SVG icon set: Lucide v0.460.0 (ISC License, https://lucide.dev) + 4 custom planet icons.
    Emoji written anywhere in the UI are swapped for these SVGs at render time. */
