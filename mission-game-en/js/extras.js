@@ -352,3 +352,114 @@
     if (S && S.screen === 'title') render();
   }
 })();
+
+/* =========================================================================
+   5) GÖREV KARTI — rapordan 1200×630 PNG (sınıfta / sosyal medyada paylaşmak için).
+   Düz koyu zemin (geçiş ve parlama yok), not, puan, sonuç, araç özeti, puan dağılımı, rozet sayısı
+   ve (WebGL varsa) 3B aracın küçük bir görüntüsü. Tuvale emoji yazılmaz.
+   ========================================================================= */
+(function () {
+  'use strict';
+  const EN = typeof LANG !== 'undefined' && LANG === 'en';
+  const T = EN
+    ? { btn: 'Download mission card', brand: 'Mission Architect', pts: 'points', parts: ['Science', 'Success', 'Efficiency', 'Team', 'Bonus'], badges: 'badges', file: 'mission-card', made: 'Made with Mission Architect · NASA Space Apps 2026', fail: 'Could not create the image.' }
+    : { btn: 'Görev kartını indir', brand: 'Görev Mimarı', pts: 'puan', parts: ['Bilim', 'Başarı', 'Verimlilik', 'Takım', 'Bonus'], badges: 'rozet', file: 'gorev-karti', made: 'Görev Mimarı ile tasarlandı · NASA Space Apps 2026', fail: 'Resim oluşturulamadı.' };
+  const MAX = [600, 150, 150, 100, 100];
+  const strip = (s) => String(s).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
+
+  function craftImage(R) {
+    try {
+      if (!window.THREE || !window.Craft3D || !Craft3D.ready || !Craft3D.ready()) return null;
+      const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      r.setPixelRatio(1); r.setSize(420, 420, false);
+      r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+      const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
+      const sun = new THREE.DirectionalLight(0xfff4e6, 2.6); sun.position.set(-4, 5, 4); scene.add(sun);
+      const fill = new THREE.DirectionalLight(0x9fb8d9, 0.55); fill.position.set(4, -2, -3); scene.add(fill);
+      scene.add(new THREE.HemisphereLight(0xbfd2ff, 0x1a1410, 0.5));
+      if (Craft3D.envFor) scene.environment = Craft3D.envFor(r);
+      const m = Craft3D.build(R); scene.add(m);
+      const sph = new THREE.Box3().setFromObject(m).getBoundingSphere(new THREE.Sphere());
+      const dist = sph.radius / Math.sin((30 * Math.PI) / 360) * 1.05;
+      cam.position.copy(sph.center).add(new THREE.Vector3(0.75, 0.42, 1).normalize().multiplyScalar(dist));
+      cam.lookAt(sph.center); cam.near = dist / 50; cam.far = dist * 4; cam.updateProjectionMatrix();
+      r.render(scene, cam);
+      const url = r.domElement.toDataURL('image/png');
+      r.dispose(); try { r.forceContextLoss(); } catch (e) { /* */ }
+      return url;
+    } catch (e) { return null; }
+  }
+
+  function draw(cb) {
+    const res = S.result, sim = S.sim; if (!res || !sim) return cb(null);
+    const R = sim.R, sc = scen(), score = res.score;
+    const W = 1200, H = 630, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    const font = (w, px) => `${w} ${px}px "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif`;
+    g.fillStyle = '#0b1118'; g.fillRect(0, 0, W, H);
+    // birkaç sabit yıldız (tohumlu, her seferinde aynı)
+    let s = 7; const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+    for (let i = 0; i < 90; i++) { g.globalAlpha = 0.25 + rnd() * 0.5; g.fillStyle = '#ffffff'; const z = rnd() < 0.1 ? 2 : 1; g.fillRect(rnd() * W, rnd() * H, z, z); }
+    g.globalAlpha = 1;
+    // başlık
+    g.fillStyle = '#9aa8b6'; g.font = font(700, 22); g.textBaseline = 'alphabetic'; g.fillText(T.brand.toUpperCase(), 60, 70);
+    g.fillStyle = '#eef2f6'; g.font = font(700, 46); g.fillText(strip(sc.name), 60, 128);
+    g.fillStyle = '#a6b3c0'; g.font = font(400, 24);
+    const money = typeof fmtMoney === 'function' ? fmtMoney(R.cost.total) : '$' + Math.round(R.cost.total) + 'M';
+    g.fillText(strip(`${R.orbit.short} · ${R.L.name} · ${Math.round(R.mass.wet).toLocaleString(EN ? 'en-US' : 'tr-TR')} kg · ${money}`), 60, 168);
+    // not kutusu
+    const gradeCol = { S: '#4cc38a', A: '#4cc38a', B: '#8fb8ff', C: '#e8b04a', D: '#f07a6a', F: '#f07a6a' }[score.grade] || '#eef2f6';
+    g.strokeStyle = gradeCol; g.lineWidth = 4; g.strokeRect(60, 210, 130, 130);
+    g.fillStyle = gradeCol; g.font = font(700, 88); g.textAlign = 'center'; g.fillText(score.grade, 125, 307); g.textAlign = 'left';
+    g.fillStyle = '#eef2f6'; g.font = font(700, 40); g.fillText(strip(score.outcome), 220, 252);
+    g.font = font(700, 96); g.fillText(String(score.total), 220, 338);
+    const tw = g.measureText(String(score.total)).width;
+    g.fillStyle = '#a6b3c0'; g.font = font(400, 28); g.fillText(`/ 1000 ${T.pts}`, 236 + tw, 336);
+    // puan dağılımı çubukları
+    const vals = [score.science, score.success, score.eff, score.team, score.bonus];
+    vals.forEach((v, i) => {
+      const y = 386 + i * 38;
+      g.fillStyle = '#c9d3dd'; g.font = font(400, 22); g.fillText(T.parts[i], 60, y + 18);
+      g.fillStyle = '#1f2b38'; g.fillRect(220, y, 380, 22);
+      g.fillStyle = '#8fb8ff'; g.fillRect(220, y, Math.max(0, Math.min(1, v / MAX[i])) * 380, 22);
+      g.fillStyle = '#eef2f6'; g.font = font(700, 22); g.fillText(String(v), 616, y + 18);
+    });
+    // alt satır + rozet sayısı
+    let have = {}; try { have = JSON.parse(localStorage.getItem('ma_badges') || '{}') || {}; } catch (e) { have = {}; }
+    const nb = Object.keys(have).length, tb = (window.MA_BADGES || []).length;
+    g.fillStyle = '#8f9dab'; g.font = font(400, 20);
+    g.fillText(T.made + (tb ? ` · ${nb} / ${tb} ${T.badges}` : ''), 60, 600);
+    // 3B araç (varsa) sağda
+    const url = craftImage(R);
+    if (!url) return cb(c);
+    const img = new Image();
+    img.onload = () => { g.drawImage(img, 720, 150, 420, 420); cb(c); };
+    img.onerror = () => cb(c);
+    img.src = url;
+  }
+
+  function download() {
+    const go = () => draw((c) => {
+      if (!c) return;
+      const name = `${T.file}-${S.scenario}-${S.result.score.total}.png`;
+      const save = (url, revoke) => { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (revoke) setTimeout(() => URL.revokeObjectURL(url), 4000); };
+      try {
+        if (c.toBlob) c.toBlob((b) => (b ? save(URL.createObjectURL(b), true) : save(c.toDataURL('image/png'))), 'image/png');
+        else save(c.toDataURL('image/png'));
+      } catch (e) { if (typeof toast === 'function') toast(T.fail); }
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go); else go();
+  }
+  window.MA_CARD = { draw, download };
+
+  if (typeof renderReport === 'function') {
+    const baseReport = renderReport;
+    renderReport = function () {
+      const html = baseReport.apply(this, arguments);
+      const btn = `<button class="btn big" data-card>${T.btn}</button>`;
+      const i = html.indexOf('<button class="btn big" data-act="home"');
+      return i < 0 ? html : html.slice(0, i) + btn + html.slice(i);
+    };
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-card]'); if (b) { e.preventDefault(); download(); } });
+})();
