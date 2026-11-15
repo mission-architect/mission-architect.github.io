@@ -39,7 +39,9 @@
   // Önce NASA dokusu (craft3d.js nasaTex); yüklenene kadar koyu yer tutucu, yüklenemezse kodla üretilen doku.
   function planet(body, r) {
     const mat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.95, metalness: 0 });
-    const use = (t) => { mat.map = t; mat.color.set(0xffffff); mat.needsUpdate = true; };
+    // Europa'nın NASA dokusu gri; gerçek Europa krem rengi, kızıl-kahve çizgili (2026-11-15 kullanıcı: "Ay'a benziyor")
+    const tint = body === 'Europa' ? 0xe2bf93 : 0xffffff;
+    const use = (t) => { mat.map = t; mat.color.set(tint); mat.needsUpdate = true; };
     const t = Craft3D.nasaTex(body, use, () => use(planetTex(body)));
     if (t) use(t);
     return new THREE.Mesh(new THREE.SphereGeometry(r, 64, 40), mat);
@@ -96,11 +98,11 @@
     S.flyby = !!ob.flyby;
     S.jup = k === 'jflyby';
     const center = S.jup ? 'Jupiter' : sc.body;
-    S.planet = planet(center, 1);
+    S.planet = planet(center, 1); S.center = center;
     S.planet.rotation.z = 0.2; // eksen eğikliği
     W.add(S.planet);
     if (sc.body === 'Europa' && !S.jup) { // arka planda Jüpiter
-      const jp = planet('Jupiter', 9); jp.position.set(-24, 9, -46); W.add(jp);
+      const jp = planet('Jupiter', 6); jp.position.set(-30, -3, -40); W.add(jp); S.bg = jp; S.bgR = 6;
     }
     if (S.jup) { // Europa, Jüpiter'in çevresinde
       S.moonR = 2.3;
@@ -145,6 +147,12 @@
     S.plane.add(S.craft);
     // veri noktaları (Dünya yönüne akar)
     S.earthDir = new THREE.Vector3(0.75, 0.55, 0.38).normalize();
+    if (sc.body === 'Europa') {
+      S.tags = [{ obj: S.planet, r: 1, name: bodyName(S.center) }];
+      if (S.moon) S.tags.push({ obj: S.moon, r: 0.16, name: bodyName('Europa') });
+      if (S.bg) S.tags.push({ obj: S.bg, r: S.bgR, name: bodyName('Jupiter') });
+      S.tagKey = k + ':' + S.tags.length;
+    }
     const dp = new Float32Array(8 * 3), dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(dp, 3));
     S.data = new THREE.Points(dg, new THREE.PointsMaterial({ color: 0x62cf8f, size: 4, sizeAttenuation: false, transparent: true, opacity: 0.9 }));
     S.data.frustumCulled = false;
@@ -168,6 +176,24 @@
     return new THREE.Vector3(S.a * Math.cos(E) - S.fc, 0, -S.b * Math.sin(E));
   }
 
+  const BODY_NAME = { Jupiter: { tr: 'Jüpiter', en: 'Jupiter' }, Europa: { tr: 'Europa', en: 'Europa' } };
+  function bodyName(b) { const n = BODY_NAME[b]; return n ? (typeof LANG !== 'undefined' && LANG === 'en' ? n.en : n.tr) : b; }
+  function names(wrap, S, show) {
+    let box = wrap.querySelector('.viz-3d-names');
+    if (!show || !S || !S.tags) { if (box) box.hidden = true; return; }
+    if (!box) { box = document.createElement('div'); box.className = 'viz-3d-names'; box.setAttribute('aria-hidden', 'true'); wrap.appendChild(box); }
+    if (box.dataset.k !== S.tagKey) { box.innerHTML = S.tags.map((t) => `<span class="nm">${t.name}</span>`).join(''); box.dataset.k = S.tagKey; }
+    box.hidden = false;
+    const w = wrap.clientWidth, h = wrap.clientHeight, els = box.children, v = new THREE.Vector3(), up = new THREE.Vector3();
+    S.tags.forEach((t, i) => {
+      const el = els[i]; if (!el) return;
+      t.obj.getWorldPosition(v);
+      up.copy(V.camera.up).multiplyScalar(t.r * 1.12); v.add(up); v.project(V.camera);
+      const vis = v.z < 1 && v.x > -1.05 && v.x < 1.05 && v.y > -1.05 && v.y < 1.05;
+      el.style.display = vis ? '' : 'none';
+      if (vis) { el.style.left = ((v.x + 1) / 2 * w).toFixed(1) + 'px'; el.style.top = ((1 - v.y) / 2 * h).toFixed(1) + 'px'; }
+    });
+  }
   function labels(wrap, sc) {
     let box = wrap.querySelector('.viz-3d-labels');
     if (!box) {
@@ -241,6 +267,7 @@
     V.camera.aspect = w / h; V.camera.updateProjectionMatrix();
     V.renderer.toneMappingExposure = 1;
     V.renderer.render(V.scene, V.camera);
+    names(wrap, S, true);
     return true;
   }
 
@@ -523,6 +550,7 @@
     // fırlatmada gezinme araçları ve yörünge etiketleri yok
     if (V.bar) { V.bar.hidden = true; V.bar.parts.forEach((x) => { x.hidden = true; }); }
     const lb = wrap.querySelector('.viz-3d-labels'); if (lb) lb.hidden = true;
+    names(wrap, null, false);
     if (!V.L || V.L.sim !== sim) { if (V.L) { disposeScene(V.L.scene); disposeScene(V.L.far); } V.L = buildLaunch(sim); }
     if (V.mode !== 'launch') { V.mode = 'launch'; fadeIn(600); }
     if (!canvas.dataset.cleared) { const g = canvas.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, canvas.width, canvas.height); canvas.dataset.cleared = '1'; }
@@ -692,6 +720,7 @@
     if (V.bar) { V.bar.hidden = true; V.bar.parts.forEach((x) => { x.hidden = true; }); }
     const wrap = canvas.parentElement, lb = wrap && wrap.querySelector('.viz-3d-labels');
     if (lb) lb.hidden = true;
+    if (wrap) names(wrap, null, false);
     delete canvas.dataset.cleared;
   }
 
