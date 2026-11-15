@@ -368,12 +368,13 @@
     }
 
     // ---- aletler: ön üç yüze (sol-ön, ön, sağ-ön) dağıtılır
-    const front = ['camera', 'spectrometer', 'multispec', 'thermal', 'altimeter', 'atmo', 'neutron', 'particles'].filter(on).slice(0, 6);
+    const front = ['camera', 'spectrometer', 'multispec', 'thermal', 'uv', 'microwave', 'altimeter', 'atmo', 'neutron', 'particles'].filter(on).slice(0, 9);
     const faceA = [0, -Math.PI / 4, Math.PI / 4];
+    const nRows = Math.ceil(front.length / 3);
     front.forEach((id, i) => {
-      const k = big(id) * Math.min(1, s / 1.2), g = new THREE.Group();
-      const a = faceA[i % 3], row = Math.floor(i / 3), nRows = front.length > 3 ? 2 : 1;
-      const y = nRows === 1 ? 0 : (row === 0 ? 1 : -1) * hy * 0.42;
+      const k = big(id) * Math.min(1, s / 1.2) * (nRows > 2 ? 0.78 : 1), g = new THREE.Group();
+      const a = faceA[i % 3], row = Math.floor(i / 3);
+      const y = nRows === 1 ? 0 : nRows === 2 ? (row === 0 ? 1 : -1) * hy * 0.42 : (1 - row) * hy * 0.6;
       g.position.set(Math.sin(a) * ap, y, Math.cos(a) * ap); g.rotation.y = a;
       if (id === 'camera' || id === 'multispec') {
         const barrel = cyl(0.085 * k, 0.1 * k, 0.28 * k, id === 'camera' ? m.white : m.mliSilver, 24); barrel.rotation.x = Math.PI / 2; barrel.position.z = 0.14 * k; g.add(barrel);
@@ -395,6 +396,14 @@
       } else if (id === 'atmo') {
         const b = box(0.2 * k, 0.14 * k, 0.1 * k, m.white); b.position.z = 0.05 * k; g.add(b);
         const dome = mesh(new THREE.SphereGeometry(0.07 * k, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), m.lens); dome.rotation.x = Math.PI / 2; dome.position.z = 0.1 * k; g.add(dome);
+      } else if (id === 'uv') { // ince, uzun teleskop + siyah siperlik
+        const base = box(0.12 * k, 0.1 * k, 0.08 * k, m.mliSilver); base.position.z = 0.04 * k; g.add(base);
+        const tube = cyl(0.05 * k, 0.05 * k, 0.3 * k, m.white, 20); tube.rotation.x = Math.PI / 2; tube.position.z = 0.17 * k; g.add(tube);
+        const hood = cyl(0.06 * k, 0.05 * k, 0.06 * k, m.dark, 20); hood.rotation.x = Math.PI / 2; hood.position.z = 0.34 * k; g.add(hood);
+        const l = cyl(0.04 * k, 0.04 * k, 0.01, m.lens, 20); l.rotation.x = Math.PI / 2; l.position.z = 0.32 * k; g.add(l);
+      } else if (id === 'microwave') { // altın kare boynuz anten
+        const horn = cyl(0.13 * k, 0.045 * k, 0.2 * k, m.mli, 4); horn.rotation.x = Math.PI / 2; horn.rotation.z = Math.PI / 4; horn.position.z = 0.1 * k; g.add(horn);
+        const mouth = box(0.17 * k, 0.17 * k, 0.008, m.dark); mouth.position.z = 0.2 * k; g.add(mouth);
       } else {
         const b = box(0.15 * k, 0.12 * k, 0.1 * k, m.mliSilver); b.position.z = 0.05 * k; g.add(b);
         const det = box(0.1 * k, 0.07 * k, 0.01, m.dark); det.position.z = 0.105 * k; g.add(det);

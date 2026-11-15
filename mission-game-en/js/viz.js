@@ -210,8 +210,8 @@ function craftSVG(R) {
   P.push('</g>');
   // alt yüz aletleri (yer gözlem yüzü)
   if (on('sar')) { const sw = bw * 1.35 * big('sar'); P.push(`<g data-part="i-sar"><rect x="${cx - sw / 2}" y="${yb + 26}" width="${sw}" height="8" fill="#5a6370" stroke="#9aa3ad"/><line x1="${cx - sw / 4}" y1="${yb}" x2="${cx - sw / 4}" y2="${yb + 26}" stroke="#9aa3ad"/><line x1="${cx + sw / 4}" y1="${yb}" x2="${cx + sw / 4}" y2="${yb + 26}" stroke="#9aa3ad"/></g>`); }
-  const slots = ['camera', 'spectrometer', 'multispec', 'thermal', 'altimeter', 'atmo', 'neutron', 'particles'].filter(on);
-  const used = slots.slice(0, 6);
+  const slots = ['camera', 'spectrometer', 'multispec', 'thermal', 'uv', 'microwave', 'altimeter', 'atmo', 'neutron', 'particles'].filter(on);
+  const used = slots.slice(0, 8);
   used.forEach((id, i) => { P.push(`<g data-part="i-${id}">`);
     const sx = x0 + 8 + ((bw - 16) * (i + 0.5)) / used.length;
     const k = big(id);
@@ -220,6 +220,8 @@ function craftSVG(R) {
     else if (id === 'thermal') P.push(`<rect x="${sx - 6 * k}" y="${yb}" width="${12 * k}" height="${10 * k}" fill="#e2e5e8" stroke="#8a919a"/>${[2, 5, 8].map((o) => `<line x1="${sx - 6 * k}" y1="${yb + o * k}" x2="${sx + 6 * k}" y2="${yb + o * k}" stroke="#9aa3ad"/>`).join('')}`);
     else if (id === 'altimeter') P.push(`<rect x="${sx - 4 * k}" y="${yb}" width="${8 * k}" height="${9 * k}" fill="#cfd4d9" stroke="#8a919a"/><circle cx="${sx}" cy="${yb + 9 * k}" r="${3 * k}" fill="#1d2228"/>`);
     else if (id === 'atmo') P.push(`<rect x="${sx - 6 * k}" y="${yb}" width="${12 * k}" height="${8 * k}" fill="#d7dbe0" stroke="#8a919a"/><circle cx="${sx}" cy="${yb + 8 * k}" r="${4 * k}" fill="#7a838e"/>`);
+    else if (id === 'uv') P.push(`<rect x="${sx - 3 * k}" y="${yb}" width="${6 * k}" height="${18 * k}" fill="#eef0f2" stroke="#8a919a"/><rect x="${sx - 3.5 * k}" y="${yb + 18 * k - 3}" width="${7 * k}" height="3" fill="#1d2228"/>`);
+    else if (id === 'microwave') P.push(`<path d="M ${sx - 2.5 * k} ${yb} L ${sx - 6 * k} ${yb + 10 * k} L ${sx + 6 * k} ${yb + 10 * k} L ${sx + 2.5 * k} ${yb} Z" fill="#c9a24a" stroke="#8a6d2a"/>`);
     else P.push(`<rect x="${sx - 4 * k}" y="${yb}" width="${8 * k}" height="${6 * k}" fill="#bfc5cc" stroke="#8a919a"/>`);
     P.push('</g>');
   });
