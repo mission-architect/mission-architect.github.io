@@ -40,6 +40,8 @@ Source code: https://github.com/grkm2802/oyun
 4. **Learn from the result.**
    - **Score.** Out of 1000: science, mission success, resource efficiency and team goals.
    - **Lessons.** Short, plain-language lessons explain what worked and what did not.
+   - **Real missions.** A side-by-side table compares your craft with the real NASA mission behind each scenario: Landsat 8, LRO, MAVEN and Europa Clipper.
+   - **Badges.** Twelve badges reward good engineering, such as finishing with budget left or succeeding on a small rocket.
    - **Sharing.** A share code lets friends open the same design.
 
 ### How it works

@@ -103,4 +103,6 @@ Kodun büyük kısmı ve oyun metinleri yapay zekâ kod asistanı Claude (Anthro
 - **Kaynaklar:** bütçe, kütle, güç, batarya, veri, takvim, radyasyon (canlı gösterge paneli)
 - **Takım modu:** 2–4 oyuncu, 4 rol, rollere özel çatışan hedefler, fırlatma öncesi onay, olaylarda sorumlu rolün kararı
 - **Simülasyon ve değerlendirme:** rastgele olaylar, puan (1000 üzerinden), görev raporu ve önceki denemeyle karşılaştırma
+- **Raporda:** gerçek NASA göreviyle karşılaştırma (Landsat 8, LRO, MAVEN, Europa Clipper) ve 12 rozet
+- **Ses ve erişim:** kodla üretilen ses efektleri (kapatılabilir), uçuşta klavye kısayolları, yavaş cihazda otomatik düşük 3B kalite
 - **Ekstralar:** 4 zorluk seviyesi ve serbest mod, sıralama tablosu, tasarım paylaşma kodu, sözlük, iki dil, açık/koyu tema
