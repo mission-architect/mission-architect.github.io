@@ -1,6 +1,6 @@
 /* AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. */
 /* Görev Mimarı — açılış ekranı.
-   1) Açılış videosu (mission-game/media/acilis-ekrani.mp4) tam ekran oynar (sessiz başlar; "Sesi aç" ve "Geç" düğmeleri).
+   1) Açılış videosu (mission-game/media/acilis-ekrani.mp4) tam ekran SESLİ oynar. Tarayıcı izin vermezse (sayfaya henüz dokunulmadı) "▶ İzle" düğmesi çıkar, basınca baştan sesli oynar. "Sesi kapat/aç" ve "Geç" düğmeleri.
    2) Video siyah ekranla biter → siyah ekranın ortasında "Başla" düğmesi.
    3) Başla'ya basınca bir roket ateş ve duman püskürterek yukarı uzaklaşır, ekran kararıp açılır ve site görünür.
    - Site her açıldığında oynar. Sadece dil değişimi yenilemesinde atlanır (ui.js switchLang sessionStorage 'ma_intro_skip' koyar, burada silinir).
@@ -16,8 +16,8 @@
   var lang = 'tr';
   try { lang = localStorage.getItem('ma_lang') || root.getAttribute('data-default-lang') || 'tr'; } catch (e) { /* */ }
   var T = lang === 'en'
-    ? { start: 'Start', skip: 'Skip', sound: 'Sound on', mute: 'Sound off', label: 'Intro' }
-    : { start: 'Başla', skip: 'Geç', sound: 'Sesi aç', mute: 'Sesi kapat', label: 'Açılış' };
+    ? { start: 'Start', skip: 'Skip', sound: 'Sound on', mute: 'Sound off', label: 'Intro', play: '▶ Watch' }
+    : { start: 'Başla', skip: 'Geç', sound: 'Sesi aç', mute: 'Sesi kapat', label: 'Açılış', play: '▶ İzle' };
   var reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   window.MA_INTRO_ACTIVE = true;
 
@@ -28,10 +28,11 @@
     '<canvas class="intro-fx" aria-hidden="true"></canvas>' +
     '<div class="intro-top"><button type="button" class="intro-btn" data-i="sound">' + T.sound + '</button>' +
     '<button type="button" class="intro-btn" data-i="skip">' + T.skip + '</button></div>' +
-    '<button type="button" class="intro-start" data-i="start" hidden>' + T.start + '</button>';
+    '<button type="button" class="intro-start" data-i="start" hidden>' + T.start + '</button>' +
+    '<button type="button" class="intro-start intro-play" data-i="play" hidden>' + T.play + '</button>';
   (document.body || root).appendChild(box);
   root.classList.remove('intro-pending');
-  var video = box.querySelector('video'), startBtn = box.querySelector('.intro-start'), top = box.querySelector('.intro-top'), soundBtn = box.querySelector('[data-i="sound"]');
+  var video = box.querySelector('video'), startBtn = box.querySelector('.intro-start'), top = box.querySelector('.intro-top'), soundBtn = box.querySelector('[data-i="sound"]'), playBtn = box.querySelector('[data-i="play"]');
   video.muted = false;
   var fx = box.querySelector('canvas'), g = fx.getContext('2d');
   var stage = 'video';
@@ -51,23 +52,36 @@
   else {
     var p = video.play();
     if (p && p.then) p.then(function () { soundBtn.textContent = T.mute; }).catch(function () {
-      // Tarayıcı sesli otomatik oynatmayı engellerse video sessiz devam eder; ses düğmesi görünür kalır.
-      video.muted = true; soundBtn.textContent = T.sound;
-      var mutedPlay = video.play();
-      if (mutedPlay && mutedPlay.catch) mutedPlay.catch(showStart);
+      // Tarayıcı sesli otomatik oynatmayı engeller (kullanıcı henüz dokunmadı). Sessiz başlatmak yerine
+      // "İzle" düğmesi gösterilir; basınca (kullanıcı hareketi) video baştan SESLİ oynar. (2026-11-15 kullanıcı: "açılınca sesi de olsun")
+      if (stage !== 'video') return;
+      stage = 'wait';
+      soundBtn.hidden = true;
+      playBtn.hidden = false;
+      playBtn.focus({ preventScroll: true });
     });
     // video hiç başlamazsa (ağ) bir süre sonra Başla
     setTimeout(function () { if (stage === 'video' && video.currentTime === 0) showStart(); }, 6000);
+  }
+  function playWithSound() {
+    if (stage !== 'wait') return;
+    stage = 'video';
+    playBtn.hidden = true; soundBtn.hidden = false;
+    video.muted = false; soundBtn.textContent = T.mute;
+    try { video.currentTime = 0; } catch (e) { /* */ }
+    var pp = video.play();
+    if (pp && pp.catch) pp.catch(function () { video.muted = true; soundBtn.textContent = T.sound; video.play().catch(showStart); });
   }
 
   box.addEventListener('click', function (e) {
     var b = e.target.closest('[data-i]'); if (!b) return;
     var k = b.getAttribute('data-i');
     if (k === 'sound') { video.muted = !video.muted; b.textContent = video.muted ? T.sound : T.mute; if (!video.muted && video.paused) video.play().catch(function () { video.muted = true; b.textContent = T.sound; }); }
-    else if (k === 'skip') showStart();
+    else if (k === 'play') playWithSound();
+    else if (k === 'skip') { if (stage === 'wait') stage = 'video'; playBtn.hidden = true; showStart(); }
     else if (k === 'start') launch();
   });
-  box.addEventListener('keydown', function (e) { if (e.key === 'Escape' && stage === 'video') showStart(); });
+  box.addEventListener('keydown', function (e) { if (e.key === 'Escape' && (stage === 'video' || stage === 'wait')) { stage = 'video'; playBtn.hidden = true; showStart(); } });
 
   function finish() {
     if (stage === 'done') return;
