@@ -113,7 +113,7 @@ Scriptler klasik `<script>` olarak bu sırayla yüklenir ve global değişkenler
 ### claude.ai Artifact'leri (özel önizleme)
 - Türkçe açılan: https://claude.ai/artifact/Fdp1bqmQLCqpMrSKUp9Nsa
 - İngilizce açılan: https://claude.ai/artifact/WZHoZtcnkZVffxZTXuHChw
-- İkisi de iki dili içerir (dil düğmesiyle geçilir). Güncellemek için **ikisini de** yayınla: `file_path` = `publish/tr/index.html` / `publish/en/index.html`, `files` haritası yayın yolu = kaynak yolu olacak şekilde: `mission-game/css/style.css`, `mission-game/js/{icons,data,model,sim,viz,ui,workshop,craft3d,flight3d,tour,online}.js`, `mission-game-en/js/{aynı dosyalar}.js` ve `mission-game/vendor/three.min.js` ile `mission-game/textures/*.jpg`, `mission-game/models/*.glb`, `mission-game/vendor/{GLTFLoader,Sky}.js`, `intro.js`, `mission-game/media/acilis-ekrani.mp4`. Bu oturumdan değilse `url` parametresiyle yayınla; yeni bağlantı oluşturma.
+- İkisi de iki dili içerir (dil düğmesiyle geçilir). Güncellemek için **ikisini de** yayınla: `file_path` = `publish/tr/index.html` / `publish/en/index.html`, `files` haritası yayın yolu = kaynak yolu olacak şekilde: `mission-game/css/style.css`, `mission-game/js/{icons,data,model,sim,viz,ui,workshop,craft3d,flight3d,tour,online,extras}.js`, `mission-game-en/js/{aynı dosyalar}.js` ve `mission-game/vendor/three.min.js` ile `mission-game/textures/*.jpg`, `mission-game/models/*.glb`, `mission-game/vendor/{GLTFLoader,Sky}.js`, `intro.js`, `mission-game/media/acilis-ekrani.mp4`. Bu oturumdan değilse `url` parametresiyle yayınla; yeni bağlantı oluşturma.
 - Bağlantılar özel; paylaşımı kullanıcı sayfanın Paylaş menüsünden açar.
 
 ## Harici araçlar
