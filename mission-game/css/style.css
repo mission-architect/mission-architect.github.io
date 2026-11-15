@@ -588,3 +588,12 @@ html.intro-pending body > *:not(#intro) { visibility: hidden; }
 #intro [hidden] { display: none; }
 @keyframes intro-in { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { #intro, #intro .intro-video { transition: none; } #intro .intro-start { animation: none; } }
+
+/* Raporda gerçek görevle karşılaştırma (extras.js) */
+.real-cmp .real-name { margin: 0 0 4px; }
+.real-cmp .real-name a { color: var(--accent); }
+.real-cmp .real-fact { margin: 0 0 10px; font-size: 15px; }
+.real-scroll { overflow-x: auto; }
+table.budget.real-table td, table.budget.real-table td:last-child { text-align: left; font-family: inherit; }
+.real-table td:nth-child(2), .real-table td:nth-child(3) { white-space: nowrap; }
+@media (max-width: 520px) { .real-table td:nth-child(2), .real-table td:nth-child(3) { white-space: normal; } }
