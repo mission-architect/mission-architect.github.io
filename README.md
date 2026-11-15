@@ -1,5 +1,7 @@
 # Görev Mimarı / Mission Architect
 
+> **English:** A browser game for the NASA Space Apps Challenge 2026 "Space Mission Design Game" challenge. Design a spacecraft, launch it and fly the mission. **Play:** https://grkm2802.github.io/oyun/?lang=en · **Read in English:** [README.en.md](README.en.md) · **AI use:** [AI_USE.md](AI_USE.md)
+
 NASA Space Apps Challenge 2026 — *Space Mission Design Game* görevi için tarayıcıda çalışan, Türkçe ve İngilizce eğitsel bir uzay görevi tasarım oyunu. Oyuncu bir görev seçer, uzay aracını tasarlar, fırlatır ve sonucun nedenlerini öğrenir.
 
 ## Yerelde çalıştırma
