@@ -54,14 +54,24 @@ function decodeDesign(code) {
 /* =========================================================================
    RENDER ROOT
    ========================================================================= */
+let lastRenderedScreen = null;
 function render() {
   if (S.screen !== 'sim' && S.ui) { cancelAnimationFrame(S.ui.raf); S.ui = null; }
   const app = $('#app');
+  // Aynı ekran yeniden çiziliyorsa (ör. başlangıçta görev/ekip/zorluk seçimi) kaydırma yerini ve odağı koru
+  const same = S.screen === lastRenderedScreen, keepY = window.scrollY;
+  const fe = document.activeElement;
+  const focusSel = same && fe && fe.dataset && fe.dataset.act
+    ? `[data-act="${fe.dataset.act}"]` + (fe.dataset.v != null ? `[data-v="${CSS.escape(fe.dataset.v)}"]` : '') : null;
   if (S.screen === 'title') app.innerHTML = renderTitle();
   else if (S.screen === 'design') { app.innerHTML = renderDesignShell(); refreshDesign(); }
   else if (S.screen === 'sim') { app.innerHTML = renderSimShell(); startSimLoop(); }
   else if (S.screen === 'report') app.innerHTML = renderReport();
-  window.scrollTo(0, 0);
+  if (same) {
+    window.scrollTo(0, keepY);
+    if (focusSel) { const el = app.querySelector(focusSel); if (el) el.focus({ preventScroll: true }); }
+  } else window.scrollTo(0, 0);
+  lastRenderedScreen = S.screen;
   if (window.onScreen) window.onScreen(S.screen);
   document.dispatchEvent(new CustomEvent('ma:screen', { detail: S.screen }));
 }
