@@ -3,6 +3,7 @@
   "short_name": "Görev Mimarı",
   "description": "Uzay görevini tasarla, fırlat ve uçur. Her yaşa uygun eğitsel uzay görevi tasarım oyunu.",
   "lang": "tr",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

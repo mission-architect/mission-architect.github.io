@@ -36,6 +36,27 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
 
+  <!-- Arama motorları için yapılandırılmış veri (çalıştırılmaz; CSP'ye takılmaz) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["VideoGame", "WebApplication"],
+    "name": "Görev Mimarı · Mission Architect",
+    "alternateName": "Mission Architect",
+    "url": "%SITE_URL%",
+    "image": "%SITE_URL%assets/og-image.png",
+    "description": "Free educational game: design, launch and fly a space mission while balancing budget, mass, power, data and risk.",
+    "inLanguage": ["tr", "en"],
+    "genre": ["Educational", "Simulation"],
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (web browser)",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "audience": { "@type": "Audience", "audienceType": "Students, teachers and the public" },
+    "sameAs": "https://github.com/grkm2802/oyun"
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&display=swap" rel="stylesheet">

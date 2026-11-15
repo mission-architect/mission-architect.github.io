@@ -351,6 +351,21 @@
     };
     if (S && S.screen === 'title') render();
   }
+
+  // Başlangıç alt satırına gizlilik ve kaynak kodu bağlantıları (sadece gerçek sitede; Artifact'te privacy.html yok)
+  if (typeof renderTitle === 'function' && window.MA_SITE) {
+    const baseTitle2 = renderTitle;
+    renderTitle = function () {
+      const html = baseTitle2.apply(this, arguments);
+      const i = html.lastIndexOf('<div class="footer">'); if (i < 0) return html;
+      const j = html.indexOf('</div>', i); if (j < 0) return html;
+      const links = EN
+        ? ' <a href="privacy.html#en">Privacy and credits</a> · <a href="https://github.com/grkm2802/oyun" rel="noopener" target="_blank">Source code</a>'
+        : ' <a href="privacy.html">Gizlilik ve künye</a> · <a href="https://github.com/grkm2802/oyun" rel="noopener" target="_blank">Kaynak kodu</a>';
+      return html.slice(0, j) + links + html.slice(j);
+    };
+    if (S && S.screen === 'title') render();
+  }
 })();
 
 /* =========================================================================

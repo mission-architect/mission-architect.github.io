@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- AI-assisted: this file was written with the help of Claude (Anthropic), an AI coding assistant. See AI_USE.md. -->
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gizlilik ve künye · Görev Mimarı</title>
+  <meta name="description" content="Görev Mimarı hangi verileri tutar, nerede tutar ve nasıl silinir. Privacy and credits for Mission Architect.">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="canonical" href="%SITE_URL%privacy.html">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <style>
+    :root { --bg: #0f151c; --surface: #17202a; --line: #2a3644; --ink: #e6ebf0; --muted: #b3bfcb; --accent: #7fb0ff; color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
+    main { max-width: 720px; margin: 0 auto; padding: 32px 0 64px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin-bottom: 28px; }
+    nav img { width: 40px; height: 40px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 2px; }
+    h1 { font-size: 32px; line-height: 1.2; margin: 0 0 6px; }
+    h2 { font-size: 21px; margin: 32px 0 8px; }
+    p, li { color: var(--muted); }
+    p { margin: 0 0 10px; }
+    ul { margin: 0 0 10px; padding-left: 22px; }
+    li { margin: 4px 0; }
+    b, strong { color: var(--ink); }
+    code { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 15px; color: var(--ink); }
+    .small { font-size: 15px; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 48px 0 8px; }
+  </style>
+</head>
+<body>
+<main>
+  <nav>
+    <img src="assets/icon-192.png" alt="">
+    <a href="./">← Oyuna dön</a>
+    <a href="#en" lang="en">English</a>
+  </nav>
+
+  <section aria-labelledby="tr-title">
+    <h1 id="tr-title">Gizlilik ve künye</h1>
+    <p class="small">Son güncelleme: 15 Kasım 2026</p>
+
+    <h2>Kısaca</h2>
+    <ul>
+      <li>Hesap açmak gerekmez. Ad, e-posta ya da telefon istemiyoruz.</li>
+      <li>Reklam, izleme çerezi ve ziyaretçi istatistiği yok.</li>
+      <li>Oyunun ayarları ve skorların sadece <b>senin cihazında</b> tutulur.</li>
+    </ul>
+
+    <h2>Cihazında tutulanlar</h2>
+    <p>Tarayıcının yerel depolamasında (localStorage) şunlar durur: dil, tema, ses, görülen turlar, rozetler, bu cihazdaki sıralama tablosu ve çevrimiçi odada kullandığın takma ad. Bunlar hiçbir yere gönderilmez.</p>
+    <p><b>Silmek için:</b> sıralamayı "Temizle" düğmesiyle silebilirsin. Hepsini silmek için tarayıcı ayarlarından bu sitenin verilerini sil.</p>
+
+    <h2>Çevrimiçi takım odası (isteğe bağlı)</h2>
+    <p>Sadece bir oda kurar ya da odaya katılırsan Google'ın <b>Firebase</b> hizmeti kullanılır. Anonim giriş yapılır; kim olduğun bilinmez.</p>
+    <ul>
+      <li>Odada takma adın, tasarımın, uçuş kararların ve sohbet mesajların tutulur.</li>
+      <li>Odadan çıkınca adın silinir. Son oyuncu çıkınca oda da silinir (bağlantı aniden koparsa küçük bir kayıt kalabilir).</li>
+      <li>Sohbette bağlantı, e-posta ve telefon numarası otomatik gizlenir. Yine de gerçek adını ya da kişisel bilgini yazma.</li>
+    </ul>
+
+    <h2>Üçüncü taraflar</h2>
+    <ul>
+      <li><b>GitHub Pages</b> siteyi sunar; teknik kayıt tutabilir (<a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub gizlilik bildirimi</a>).</li>
+      <li><b>Google Fonts</b> yazı tipini verir (<a href="https://policies.google.com/privacy">Google gizlilik politikası</a>).</li>
+      <li><b>Firebase</b> sadece çevrimiçi odada kullanılır (<a href="https://firebase.google.com/support/privacy">Firebase ve gizlilik</a>).</li>
+    </ul>
+
+    <h2>Çocuklar</h2>
+    <p>Oyun her yaşa uygundur ve kişisel bilgi istemez. Çevrimiçi odada takma ad kullanmanı öneririz.</p>
+
+    <h2>Erişilebilirlik</h2>
+    <p>Okunaklı yazı tipi, klavye ile oynama, ekran okuyucu etiketleri, açık/koyu tema ve "hareketleri azalt" ayarına uyum vardır. Bir sorun görürsen bize yaz.</p>
+
+    <h2>Künye</h2>
+    <p>NASA Space Apps Challenge 2026 için yapıldı. <b>Bu proje NASA tarafından onaylanmış değildir.</b> Gezegen dokuları ve roket modelleri NASA'nındır; tüm atıflar <a href="https://github.com/grkm2802/oyun#readme">README</a> dosyasında. Kodun çoğu bir yapay zekâ kodlama yardımcısıyla yazıldı (<a href="https://github.com/grkm2802/oyun/blob/main/AI_USE.md">AI_USE.md</a>).</p>
+
+    <h2>İletişim</h2>
+    <p>Soru, hata ya da silme isteği için: <a href="https://github.com/grkm2802/oyun/issues">GitHub'da konu aç</a>.</p>
+  </section>
+
+  <hr>
+
+  <section id="en" lang="en" aria-labelledby="en-title">
+    <h1 id="en-title">Privacy and credits</h1>
+    <p class="small">Last updated: November 15, 2026</p>
+
+    <h2>In short</h2>
+    <ul>
+      <li>No account is needed. We do not ask for your name, email or phone.</li>
+      <li>No ads, no tracking cookies and no visitor analytics.</li>
+      <li>Your settings and scores stay <b>on your device</b>.</li>
+    </ul>
+
+    <h2>Stored on your device</h2>
+    <p>The browser's local storage (localStorage) keeps your language, theme, sound setting, tours seen, badges, this device's leaderboard and the nickname you used in online rooms. None of it is sent anywhere.</p>
+    <p><b>To delete it:</b> the "Clear" button empties the leaderboard. To delete everything, clear this site's data in your browser settings.</p>
+
+    <h2>Online team room (optional)</h2>
+    <p>Only if you create or join a room, Google's <b>Firebase</b> service is used. You sign in anonymously; nobody knows who you are.</p>
+    <ul>
+      <li>The room keeps your nickname, the design, flight decisions and chat messages.</li>
+      <li>Your name is removed when you leave. The room is removed when the last player leaves (a small record may stay if the connection drops suddenly).</li>
+      <li>Links, emails and phone numbers are hidden in chat. Still, do not type your real name or personal details.</li>
+    </ul>
+
+    <h2>Third parties</h2>
+    <ul>
+      <li><b>GitHub Pages</b> hosts the site and may keep technical logs (<a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub Privacy Statement</a>).</li>
+      <li><b>Google Fonts</b> serves the font (<a href="https://policies.google.com/privacy">Google Privacy Policy</a>).</li>
+      <li><b>Firebase</b> is used only in online rooms (<a href="https://firebase.google.com/support/privacy">Privacy and Security in Firebase</a>).</li>
+    </ul>
+
+    <h2>Children</h2>
+    <p>The game suits all ages and asks for no personal data. Please use a nickname in online rooms.</p>
+
+    <h2>Accessibility</h2>
+    <p>A readable font, keyboard play, screen-reader labels, light and dark themes, and support for "reduce motion". If something does not work for you, tell us.</p>
+
+    <h2>Credits</h2>
+    <p>Made for the NASA Space Apps Challenge 2026. <b>This project is not endorsed by NASA.</b> Planet textures and rocket models are NASA's; full credits are in the <a href="https://github.com/grkm2802/oyun/blob/main/README.en.md">README</a>. Most of the code was written with an AI coding assistant (<a href="https://github.com/grkm2802/oyun/blob/main/AI_USE.md">AI_USE.md</a>).</p>
+
+    <h2>Contact</h2>
+    <p>For questions, bugs or deletion requests: <a href="https://github.com/grkm2802/oyun/issues">open an issue on GitHub</a>.</p>
+    <p><a href="./">← Back to the game</a></p>
+  </section>
+</main>
+</body>
+</html>

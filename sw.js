@@ -6,7 +6,7 @@
    CACHE adı yayın betiği (scripts/build_site.py) tarafından her yayında değiştirilir. */
 const CACHE = 'ma-%BUILD_ID%';
 const CORE = [
-  './', 'index.html', 'loader.js', 'intro.js', 'firebase-config.js', 'site.webmanifest',
+  './', 'index.html', 'privacy.html', 'loader.js', 'intro.js', 'firebase-config.js', 'site.webmanifest',
   'mission-game/css/style.css', 'mission-game/vendor/three.min.js',
   'assets/favicon-32.png', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/apple-touch-icon.png',
   ...['icons', 'data', 'model', 'sim', 'viz', 'ui', 'workshop', 'craft3d', 'flight3d', 'tour', 'online', 'extras'].flatMap((f) => [`mission-game/js/${f}.js`, `mission-game-en/js/${f}.js`]),
