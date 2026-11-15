@@ -2,7 +2,7 @@
 
 A free browser game for the NASA Space Apps Challenge 2026 challenge **"Space Mission Design Game"**. Players pick a mission, design the spacecraft, launch it, fly it month by month, and learn why it succeeded or failed. The game is in English and Turkish.
 
-**Play:** https://grkm2802.github.io/oyun/?lang=en. No install and no account are needed, and it works on phones.
+**Play:** https://mission-architect.github.io/?lang=en. No install and no account are needed, and it works on phones.
 
 ## How to play
 1. **Choose a mission.** There are four, each based on a real kind of NASA mission:

@@ -21,9 +21,9 @@ It teaches the real engineering behind missions without any prior knowledge, and
 `[ADD: public YouTube / Google Drive link — video ≤ 30 s with English subtitles, or ≤ 7 slides in English]`
 
 ## Link to Final Project
-https://grkm2802.github.io/oyun/?lang=en
+https://mission-architect.github.io/?lang=en
 
-Source code: https://github.com/grkm2802/oyun
+Source code: https://github.com/mission-architect/mission-architect.github.io
 
 ## Detailed Project Description
 

@@ -100,12 +100,13 @@ Scriptler klasik `<script>` olarak bu sırayla yüklenir ve global değişkenler
 
 ## Yayınlama
 ### Site (GitHub Pages) — ana yayın
-- Depo: https://github.com/grkm2802/oyun (herkese açık; yerel klasör adı gorev-mimari), dal `main`.
-- Site: https://grkm2802.github.io/oyun/
+- Depo: https://github.com/mission-architect/mission-architect.github.io (herkese açık; yerel klasör adı gorev-mimari), dal `main`. Kuruluş `mission-architect` (2026-11-15 kullanıcı isteğiyle açıldı, sahibi grkm2802; iletişim e-postası kullanıcının onayıyla girildi).
+- Site: https://mission-architect.github.io/ (kuruluş sitesi, alt yol yok: `%BASE_PATH%` = `/`).
+- Eski adres `grkm2802.github.io/oyun`: depo taşındı (2026-11-15). `grkm2802/oyun` adında yeni, küçük bir depo yalnızca yönlendirme sayfası yayınlar (service worker'ı siler, `?lang` ile yeni adrese gider). Bu depoya site dosyası koyma.
 - `main`'e her gönderim (push) `.github/workflows/deploy-pages.yml` ile siteyi kurar ve 1–2 dakikada yayınlar. Pages açık (kaynak: GitHub Actions; 2026-11-12'de `gh api` ile açıldı). İlk canlı kontrol: sayfa, tüm dosyalar, 404, service worker ve konsol temiz.
 - **Kullanıcı kuralı:** değişiklikleri kendiliğinden gönderme. Kullanıcı "yayınla" deyince:
   1. commit + `git push`
-  2. `"/c/Program Files/GitHub CLI/gh.exe" run watch $(gh run list -R grkm2802/oyun -L 1 --json databaseId --jq '.[0].databaseId') -R grkm2802/oyun --exit-status` ile çalışmanın bitmesini bekle
+  2. `"/c/Program Files/GitHub CLI/gh.exe" run watch $(gh run list -R mission-architect/mission-architect.github.io -L 1 --json databaseId --jq '.[0].databaseId') -R mission-architect/mission-architect.github.io --exit-status` ile çalışmanın bitmesini bekle
   3. siteyi aç, konsolda hata olmadığını kontrol et; Artifact'leri de güncelle.
 - GitHub CLI kurulu: `C:\Program Files\GitHub CLI\gh.exe` (Bash'te PATH'te olmayabilir, tam yolu kullan), `grkm2802` hesabıyla giriş yapılmış. Git girişi: Git Credential Manager. Kullanıcının şifresini/anahtarını asla isteme, okuma ya da yazdırma.
 - Kullanıcının hesabında yeni depo oluşturmak gibi işler otomatik izin denetiminde reddedilebilir; öyle olursa ne yapmak istediğini söyle ve kullanıcının onayını/elle yapmasını iste.
@@ -129,12 +130,13 @@ Scriptler klasik `<script>` olarak bu sırayla yüklenir ve global değişkenler
 - Yapay zekâ ("Super Intelligence") serbest ama **açıkça belirtilmeli**: kod/veri için açıklama metni + meta veri; YZ ile üretilen görsel/videoda görünür filigran; YZ ile üretilen içerikte NASA logosu/markası olamaz. Bizdeki karşılığı: `AI_USE.md`, README "Yapay zekâ kullanımı", `index.html` `ai-assistance` meta etiketi ve her elle yazılmış kaynak dosyanın ilk satırı `/* AI-assisted: ... */`. **Yeni JS/CSS dosyası eklersen bu satırı da ekle.**
 - **Geri dönüş noktası:** `kayit-2026-11-15-teslim` etiketi (GitHub'da da var) ve yerel `yedek-2026-11-15-teslim` dalı = teslim öncesi yayındaki hâl. Geri almak için: `git checkout main && git reset --hard kayit-2026-11-15-teslim` (sonra push; kullanıcıya sor).
 - **Jüri sunumu** (7 slayt, Slides Artifact'i): https://claude.ai/artifact/5HgHECc6RrC4SdS3N8fne1 — önce Türkçe yazıldı, kullanıcı beğenirse İngilizceye çevrilecek (teslim İngilizce olmalı). Görseller oyunun gerçek ekranlarından (headless Chrome + CDP ile 1920×1080 çekildi, Mars görevi, 1000 puanlık uçuş). Artifact özel; teslim için kullanıcı paylaşıma açmalı ya da PDF indirmeli.
-- `SUBMISSION.md`: form alanlarına yapıştırılacak İngilizce metin. Jüri bağlantısı `https://grkm2802.github.io/oyun/?lang=en` (`loader.js` `?lang=tr|en`'i okur, kaydeder ve adresten siler).
+- **Demo videosu** (2026-11-15): `Masaüstü/mission-architect-demo.webm` (29,8 sn, 1920×1080, İngilizce altyazı, ses yok). Oyun headless Chrome'da CDP ile oynatılıp screencast kaydedildi, sonra tarayıcıda MediaRecorder ile altyazılı WebM'e çevrildi (ffmpeg yok; betikler oturum scratchpad'indeydi: `rec.mjs`, `compose.mjs`). Depoya eklenmedi (boyut).
+- `SUBMISSION.md`: form alanlarına yapıştırılacak İngilizce metin. Jüri bağlantısı `https://mission-architect.github.io/?lang=en` (`loader.js` `?lang=tr|en`'i okur, kaydeder ve adresten siler).
 - Python heredoc'ta `'\b'` yazma: dosyaya gerçek geri silme karakteri (0x08) girdi ve regex bozuldu.
 
 ## Açık konular
 - Space Apps kurallarında yapay zekâ kullanımı / önceden hazırlanmış kod durumu doğrulanmadı; kullanıcıya teslim öncesi kontrol etmesi söylendi.
-- Takım modu iki türlü: aynı cihazda sırayla (eski) ve çevrimiçi oda (online.js). **Çevrimiçi mod canlıda açık** (2026-11-13). Firebase projesi: `nasa-space-apps-1089d` (kullanıcının Google hesabı), Realtime Database us-central1, anonim giriş açık, yetkili alan adı grkm2802.github.io, `database.rules.json` yayınlı. Canlı sitede iki sekmeyle gerçek Firebase testi geçti (oda, roller, izin, eşitleme, sohbet, onay, ortak uçuş: iki tarafta aynı 3 karar ve aynı puan 907, oda kapatma). Firebase Auth kalıcılığı SESSION: her sekme ayrı oyuncu, yenilemede aynı oyuncu (bu yüzden çıkarılan biri yeni sekmeyle yeni kimlikle girebilir; bilinen sınırlama).
+- Takım modu iki türlü: aynı cihazda sırayla (eski) ve çevrimiçi oda (online.js). **Çevrimiçi mod canlıda açık** (2026-11-13). Firebase projesi: `nasa-space-apps-1089d` (kullanıcının Google hesabı), Realtime Database us-central1, anonim giriş açık, yetkili alan adları grkm2802.github.io ve mission-architect.github.io, `database.rules.json` yayınlı. Canlı sitede iki sekmeyle gerçek Firebase testi geçti (oda, roller, izin, eşitleme, sohbet, onay, ortak uçuş: iki tarafta aynı 3 karar ve aynı puan 907, oda kapatma). Firebase Auth kalıcılığı SESSION: her sekme ayrı oyuncu, yenilemede aynı oyuncu (bu yüzden çıkarılan biri yeni sekmeyle yeni kimlikle girebilir; bilinen sınırlama).
 - Firebase konsolunda işlem gerekirse: kullanıcı uygulamanın tarayıcı panelinde kendi Google girişini yapar, ayarları Claude tıklayabilir (anonim giriş ve alan adı böyle yapıldı). Analytics bilerek eklenmedi.
 - Firebase'de oyuncusuz kalan eski odalar silinmez (sunucu yok); veri çok küçük. Gerekirse ileride temizlik eklenebilir.
 - Yarışma odası (birden çok takımın aynı görevi yarıştırdığı mod) kullanıcı tarafından sonraya bırakıldı.

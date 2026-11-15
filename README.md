@@ -1,6 +1,6 @@
 # Görev Mimarı / Mission Architect
 
-> **English:** A browser game for the NASA Space Apps Challenge 2026 "Space Mission Design Game" challenge. Design a spacecraft, launch it and fly the mission. **Play:** https://grkm2802.github.io/oyun/?lang=en · **Read in English:** [README.en.md](README.en.md) · **AI use:** [AI_USE.md](AI_USE.md)
+> **English:** A browser game for the NASA Space Apps Challenge 2026 "Space Mission Design Game" challenge. Design a spacecraft, launch it and fly the mission. **Play:** https://mission-architect.github.io/?lang=en · **Read in English:** [README.en.md](README.en.md) · **AI use:** [AI_USE.md](AI_USE.md)
 
 NASA Space Apps Challenge 2026 — *Space Mission Design Game* görevi için tarayıcıda çalışan, Türkçe ve İngilizce eğitsel bir uzay görevi tasarım oyunu. Oyuncu bir görev seçer, uzay aracını tasarlar, fırlatır ve sonucun nedenlerini öğrenir.
 
@@ -23,7 +23,7 @@ Ardından tarayıcıda `http://localhost:8765` adresini aç. Sağ üstteki düğ
 ### Firebase kurulumu (bir kez, ~5 dakika)
 1. https://console.firebase.google.com → **Proje ekle** → ad: `gorev-mimari` → Google Analytics'i kapatabilirsin → **Proje oluştur**.
 2. Sol menü **Build → Authentication → Başlayın** → **Sign-in method** sekmesi → **Anonymous** → **Etkinleştir** → Kaydet.
-3. **Authentication → Settings → Authorized domains** → **Alan adı ekle** → `grkm2802.github.io`.
+3. **Authentication → Settings → Authorized domains** → **Alan adı ekle** → `mission-architect.github.io`.
 4. Sol menü **Build → Realtime Database → Veritabanı oluştur** → konum: **europe-west1 (Belçika)** → **Kilitli modda başlat**.
 5. Realtime Database → **Kurallar (Rules)** sekmesi → içeriği silip bu depodaki `database.rules.json` dosyasının tamamını yapıştır → **Yayınla**.
 6. Proje ayarları (sol üst dişli) → **Genel** → aşağıda **Uygulamalarınız** → web simgesi `</>` → takma ad `oyun` → **Uygulamayı kaydet** (Hosting kutusunu işaretleme) → gösterilen `firebaseConfig = { … }` nesnesini kopyala.
