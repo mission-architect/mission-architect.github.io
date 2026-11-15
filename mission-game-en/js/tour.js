@@ -57,7 +57,9 @@
       report: [
         { target: '.report-hero', title: 'Görev raporu', text: 'Notun (S en iyisi) ve 1000 üzerinden puanın.' },
         { target: '.breakdown', title: 'Puan nereden geldi?', text: 'Puanın nereden geldiğini buradan görürsün.' },
+        { target: '.badges-panel', title: 'Rozetler', text: 'İyi mühendislik rozet kazandırır. Hepsini topla!' },
         { target: '[data-tour="lessons"]', title: 'Neden böyle oldu?', text: 'Ne iyi gitti, ne kötü gitti ve neden.' },
+        { target: '[data-tour="real"]', title: 'Gerçek görev', text: 'Aracını gerçek NASA aracıyla karşılaştır.' },
         { target: '[data-act="redesign"]', title: 'Tekrar dene', text: 'Tasarımı değiştir ve puanını yükseltmeyi dene!' },
       ],
     },
@@ -91,7 +93,9 @@
       report: [
         { target: '.report-hero', title: 'Mission report', text: 'Your grade (S is best) and score out of 1000.' },
         { target: '.breakdown', title: 'Where did the points come from?', text: 'See where your points came from.' },
+        { target: '.badges-panel', title: 'Badges', text: 'Good engineering earns badges. Collect them all!' },
         { target: '[data-tour="lessons"]', title: 'Why did it go this way?', text: 'What went well, what went wrong and why.' },
+        { target: '[data-tour="real"]', title: 'The real mission', text: 'Compare your craft with the real NASA craft.' },
         { target: '[data-act="redesign"]', title: 'Try again', text: 'Change your design and try for a higher score!' },
       ],
     },
