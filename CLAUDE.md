@@ -122,7 +122,7 @@ Scriptler klasik `<script>` olarak bu sırayla yüklenir ve global değişkenler
 ## Harici araçlar
 - UI/UX tasarım önerileri için `~/.claude/skills/ui-ux-pro-max` yüklü. `${CLAUDE_PLUGIN_ROOT}` boş olduğu için betiği tam yoluyla çağır:
   `python "$HOME/.claude/skills/ui-ux-pro-max/scripts/search.py" "<sorgu>" --domain ux`
-- Lisanslar: projenin kendi kodu MIT (`LICENSE`, 2026-11-15 kullanıcı kararı; telif satırı GitHub adıyla, gerçek ad yok). NASA görselleri/modelleri, vendor kütüphaneleri ve açılış videosu MIT'e dahil değil (LICENSE sonundaki not). Lucide (ISC), Atkinson Hyperlegible Next (SIL OFL). README.md'de listeli.
+- Lisanslar: projenin kendi kodu MIT (`LICENSE`, 2026-11-15 kullanıcı kararı; telif satırı GitHub adıyla, gerçek ad yok). NASA görselleri/modelleri, vendor kütüphaneleri ve açılış videosu MIT'e dahil değil (bu not README'lerde; LICENSE dosyasına ek metin yazma, yoksa GitHub lisansı tanımıyor). Lucide (ISC), Atkinson Hyperlegible Next (SIL OFL). README.md'de listeli.
 
 ## Space Apps teslimi (2026-11-15)
 - Resmi rehber (https://www.spaceappschallenge.org/resources/project-submission-guide/, tarayıcıyla okundu; WebFetch TLS hatası veriyor): teslim **15 Kasım 23:59** (yerel etkinlik saati), her şey İngilizce, demo ≤30 sn video (İngilizce altyazı) ya da ≤7 slayt, herkese açık bağlantı. 18 yaş altı kişi görüntüsü/sesi olamaz.
