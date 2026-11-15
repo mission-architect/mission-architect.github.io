@@ -22,7 +22,7 @@ NASA Space Apps asks teams to state clearly where and how AI tools were used. Th
 
 ## Images and video
 - **Opening video** (`mission-game/media/acilis-ekrani.mp4`): *[TEAM TO CONFIRM: how it was made. If it was made with an AI video tool, the game shows a visible "AI-generated" label on it, and it must not contain NASA logos.]*
-- **Demo video narration**: the voice in the 30-second demo video was generated with ElevenLabs (AI text-to-speech). The video shows a visible "AI-generated voice (ElevenLabs)" label the whole time. The pictures in the demo are real screen recordings of the game.
+- **Demo video narration**: the voice in the 30-second demo video was generated with ElevenLabs (AI text-to-speech). The pictures in the demo are real screen recordings of the game.
 - No other AI-generated images, audio or video are used.
 
 ## Not affiliated with NASA
