@@ -610,3 +610,7 @@ table.budget.real-table td, table.budget.real-table td:last-child { text-align: 
 .badge .b-txt { display: grid; gap: 2px; font-size: 15px; }
 .badge .b-how { color: var(--muted); font-size: 13px; }
 .badge .b-new { justify-self: start; display: inline-block; margin: 2px 0; padding: 0 6px; border-radius: 6px; background: var(--accent); color: var(--accent-ink, #fff); font-size: 12px; font-weight: 700; }
+.title-badges { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+.title-badges span { color: #e8b04a; }
+.kbd-hint { font-size: 13px; margin-left: 4px; }
+@media (pointer: coarse), (max-width: 720px) { .kbd-hint { display: none; } }

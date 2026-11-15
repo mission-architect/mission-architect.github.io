@@ -302,3 +302,53 @@
   }
   window.MA_BADGES = BADGES;
 })();
+
+/* =========================================================================
+   4) KÜÇÜK KOLAYLIKLAR
+   - Uçuşta klavye: Boşluk = duraklat/devam, 1–4 = hız (1×, 2×, 4×, 8×). Yazı alanında ve pencere açıkken çalışmaz.
+   - Başlangıç ekranında kazanılan rozet sayısı (en az bir rozet varsa).
+   ========================================================================= */
+(function () {
+  'use strict';
+  const EN = typeof LANG !== 'undefined' && LANG === 'en';
+  document.addEventListener('keydown', (e) => {
+    if (typeof S === 'undefined' || S.screen !== 'sim' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (document.querySelector('.modal')) return; // karar penceresi açık
+    if (e.key === ' ' || e.code === 'Space') {
+      if (t && t.tagName === 'BUTTON') return; // düğmenin kendi Boşluk davranışı
+      const b = document.getElementById('btn-pause');
+      if (b && !b.disabled) { e.preventDefault(); b.click(); }
+    } else if (/^[1-4]$/.test(e.key)) {
+      const v = [1, 2, 4, 8][+e.key - 1];
+      const b = document.querySelector(`[data-act="speed"][data-v="${v}"]`);
+      if (b) { e.preventDefault(); b.click(); }
+    }
+  });
+
+  if (typeof renderSimShell === 'function') {
+    const baseSim = renderSimShell;
+    renderSimShell = function () {
+      const html = baseSim.apply(this, arguments);
+      const hint = `<span class="muted kbd-hint">${EN ? 'Space: pause · 1–4: speed' : 'Boşluk: duraklat · 1–4: hız'}</span>`;
+      const i = html.indexOf('<span class="grow"></span>');
+      return i < 0 ? html : html.slice(0, i) + hint + html.slice(i);
+    };
+  }
+
+  if (typeof renderTitle === 'function') {
+    const baseTitle = renderTitle;
+    renderTitle = function () {
+      const html = baseTitle.apply(this, arguments);
+      let have = {}; try { have = JSON.parse(localStorage.getItem('ma_badges') || '{}') || {}; } catch (e) { have = {}; }
+      const n = Object.keys(have).length, total = (window.MA_BADGES || []).length;
+      if (!n || !total) return html;
+      const h = html.indexOf('<div class="hero">'); if (h < 0) return html;
+      const p = html.indexOf('</p>', h); if (p < 0) return html;
+      const line = `<p class="title-badges"><span aria-hidden="true">★</span> ${EN ? `${n} / ${total} badges earned` : `${n} / ${total} rozet kazanıldı`}</p>`;
+      return html.slice(0, p + 4) + line + html.slice(p + 4);
+    };
+    if (S && S.screen === 'title') render();
+  }
+})();
